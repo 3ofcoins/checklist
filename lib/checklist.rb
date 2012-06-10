@@ -60,6 +60,7 @@ class Checklist
 
   # Execute one step of the checklist
   def step!
+    raise RuntimeError, 'Checklist is not open' unless open?
     raise RuntimeError, 'Checklist is completed' if completed?
     remaining_steps.first.run!
     completed_steps << remaining_steps.shift

@@ -2,18 +2,19 @@ require 'spec_helper'
 
 describe Checklist, '#step!' do
   let(:body) { mock('body') }
-  subject { example_checklist(body).open! }
+  subject { example_checklist(body) }
 
   before(:each) do
     STDOUT.stub(:puts)
-    STDOUT.expect_open
-    STDOUT.expect_steps(0..3)
-    STDOUT.expect_nothing_more
-    subject                     # to initialize lazy vars
-    body.expect_steps(0..3)
   end
 
   it 'should execute one next step and push it from remaining to completed' do
+    STDOUT.expect_open
+    STDOUT.expect_steps(0..3)
+    STDOUT.expect_nothing_more
+    subject.open!
+    body.expect_steps(0..3)
+
     subject.remaining.should == 4
     subject.completed.should == 0
 
@@ -37,6 +38,12 @@ describe Checklist, '#step!' do
   end
 
   it 'should complete the checklist, eventually' do
+    STDOUT.expect_open
+    STDOUT.expect_steps(0..3)
+    STDOUT.expect_nothing_more
+    subject.open!
+    body.expect_steps(0..3)
+
     subject.length.times do
       subject.completed?.should be false
       subject.step!
@@ -45,7 +52,18 @@ describe Checklist, '#step!' do
   end
 
   it 'should not be allowed when list is completed' do
+    STDOUT.expect_open
+    STDOUT.expect_steps(0..3)
+    STDOUT.expect_nothing_more
+    subject.open!
+    body.expect_steps(0..3)
+
     subject.length.times { subject.step! }
+    expect { subject.step! }.to raise_exception(RuntimeError)
+  end
+
+  it 'should be disallowed when list is not open' do
+    # Look, Ma, no open!
     expect { subject.step! }.to raise_exception(RuntimeError)
   end
 end
