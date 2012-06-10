@@ -57,6 +57,13 @@ class Checklist
     self.completed_steps = []
   end
 
+
+  def step!
+    raise RuntimeError, 'Checklist is completed' if completed?
+    remaining_steps.first.run!
+    completed_steps << remaining_steps.shift
+  end
+
   private
   attr_accessor :remaining_steps, :completed_steps
 end
