@@ -50,5 +50,10 @@ describe Checklist, '#step' do
     checklist.steps.first.response.should eq 'bar'
     checklist.steps.first.description.should be nil
     checklist.steps.first.code.call.should eq 23
+
+    checklist.step('one',   'one done')     { nil }
+    checklist.step('two',   'check two')    { nil }
+    checklist.step('three', 'three it is')  { nil }
+    checklist.length.should == 4
   end
 end

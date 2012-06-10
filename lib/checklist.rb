@@ -15,6 +15,7 @@ class Checklist
 
   # appendd a Checklist::Step to the checklist
   def <<(step)
+    raise RuntimeError, 'List is open' if open?
     step.must_be_a(Step)
     steps << step
   end
