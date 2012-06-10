@@ -15,6 +15,8 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = Checklist::VERSION
 
+  gem.add_dependency "must_be"
+
   gem.add_development_dependency 'bundler'
   gem.add_development_dependency 'mocha'
   gem.add_development_dependency 'rake'
