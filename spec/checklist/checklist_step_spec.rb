@@ -1,69 +1,51 @@
 require 'spec_helper'
 
 describe Checklist, '#step!' do
-  let(:body) do
-    body = mock('body')
-    [ :poke1!, :poke2!, :poke3!, :poke4! ].each do |method|
-      body.should_receive(method).once.ordered
-    end
-    body
-  end
-
-  let :checklist do
-    checklist = Checklist.new('Test')
-    checklist.step('one',   'one done')     { body.poke1! }
-    checklist.step('two',   'check two')    { body.poke2! }
-    checklist.step('three', 'three it is')  { body.poke3! }
-    checklist.step('four',  'here you are') { body.poke4! }
-    checklist.open!
-    checklist
-  end
+  let(:body) { mock('body') }
+  subject { example_checklist(body).open! }
 
   before(:each) do
     STDOUT.stub(:puts)
-    [ '*** Test ***',
-      '** one ...',   '** one one done',
-      '** two ...',   '** two check two',
-      '** three ...', '** three three it is',
-      '** four ...',  '** four here you are' ].each do |msg|
-      STDOUT.should_receive(:puts).with(msg)
-    end
-    STDOUT.should_receive(:puts).exactly(0).times
+    STDOUT.expect_open
+    STDOUT.expect_steps(0..3)
+    STDOUT.expect_nothing_more
+    subject                     # to initialize lazy vars
+    body.expect_steps(0..3)
   end
 
   it 'should execute one next step and push it from remaining to completed' do
-    checklist.remaining.should == 4
-    checklist.completed.should == 0
+    subject.remaining.should == 4
+    subject.completed.should == 0
 
-    checklist.step!
+    subject.step!
 
-    checklist.remaining.should == 3
-    checklist.completed.should == 1
+    subject.remaining.should == 3
+    subject.completed.should == 1
 
-    checklist.step!
-    checklist.remaining.should == 2
-    checklist.completed.should == 2
+    subject.step!
+    subject.remaining.should == 2
+    subject.completed.should == 2
 
-    checklist.step!
-    checklist.remaining.should == 1
-    checklist.completed.should == 3
+    subject.step!
+    subject.remaining.should == 1
+    subject.completed.should == 3
 
-    checklist.step!
+    subject.step!
 
-    checklist.remaining.should == 0
-    checklist.completed.should == 4
+    subject.remaining.should == 0
+    subject.completed.should == 4
   end
 
   it 'should complete the checklist, eventually' do
-    checklist.length.times do
-      checklist.completed?.should be false
-      checklist.step!
+    subject.length.times do
+      subject.completed?.should be false
+      subject.step!
     end
-    checklist.completed?.should be true
+    subject.completed?.should be true
   end
 
   it 'should not be allowed when list is completed' do
-    checklist.length.times { checklist.step! }
-    expect { checklist.step! }.to raise_exception(RuntimeError)
+    subject.length.times { subject.step! }
+    expect { subject.step! }.to raise_exception(RuntimeError)
   end
 end

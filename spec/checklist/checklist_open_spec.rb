@@ -1,37 +1,30 @@
 require 'spec_helper'
 
 describe Checklist, '#open!' do
-  let(:checklist) { Checklist.new('Test') }
+  subject { example_checklist }
   before(:each) { STDOUT.stub(:puts) }
 
   it 'opens the checklist' do
-    STDOUT.should_receive(:puts).with(
-      '*** Test ***')
-    checklist.open?.should be false
-    checklist.open!
-    checklist.open?.should be true
-    checklist.completed.should == 0
-    checklist.remaining.should == checklist.length
-  end
-
-  it 'sets all steps in remaining' do
-    checklist.step('one',   'one done')     { nil }
-    checklist.step('two',   'check two')    { nil }
-    checklist.step('three', 'three it is')  { nil }
-    checklist.open!
-    checklist.length.should == 3
-    checklist.remaining.should == 3
-    checklist.completed.should == 0
+    STDOUT.expect_open
+    subject.open?.should be false
+    subject.open!
+    subject.open?.should be true
+    subject.completed.should == 0
+    subject.remaining.should == subject.length
   end
 
   it 'cannot be called twice' do
-    checklist.open!
-    expect { checklist.open! }.to raise_exception(RuntimeError)
+    subject.open!
+    expect { subject.open! }.to raise_exception(RuntimeError)
   end
 
   it 'should prevent adding new steps' do
-    checklist.open!
-    expect { checklist.step('one', 'one done') { nil } }.
+    subject.open!
+    expect { subject.step('one', 'one done') { nil } }.
       to raise_exception(RuntimeError)
+  end
+
+  it 'returns checklist itself' do
+    subject.open!.should == subject
   end
 end

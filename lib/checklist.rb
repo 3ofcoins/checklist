@@ -55,13 +55,31 @@ class Checklist
     puts "*** #{name} ***"
     self.remaining_steps = steps.clone
     self.completed_steps = []
+    self
   end
-
 
   def step!
     raise RuntimeError, 'Checklist is completed' if completed?
     remaining_steps.first.run!
     completed_steps << remaining_steps.shift
+  end
+
+  # Finish the checklist, print and return outstanding steps
+  def close!
+    raise RuntimeError, 'Checklist is not open' unless open?
+    if completed?
+      puts '*** All steps completed ***'
+    else
+      puts "*** #{remaining_steps.length} STEPS NOT COMPLETED ***"
+      remaining_steps.each do |ss|
+        puts "** #{ss.challenge} (#{ss.response})"
+        puts ss.description if ss.description
+        puts
+      end
+    end
+    rv = remaining_steps
+    self.remaining_steps = self.completed_steps = nil
+    rv
   end
 
   private
