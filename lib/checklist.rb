@@ -34,6 +34,21 @@ class Checklist
     remaining_steps && remaining_steps.empty?
   end
 
+  # Number of defined steps
+  def length
+    steps.length
+  end
+
+  # Number of remaining steps or nil if list is not open
+  def remaining
+    remaining_steps and remaining_steps.length
+  end
+
+  # Number of completed steps or nil if list is not open
+  def completed
+    completed_steps and completed_steps.length
+  end
+
   def open!
     raise RuntimeError, "Checklist is already open" if open?
     puts "*** #{name} ***"

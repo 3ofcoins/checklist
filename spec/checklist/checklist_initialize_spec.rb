@@ -9,10 +9,13 @@ describe Checklist do
 
   it 'initially has an empty step list' do
     checklist.steps.should eq []
+    checklist.length.should eq 0
   end
 
   it 'initially is not open' do
     checklist.open?.should be false
+    checklist.remaining.should be nil
+    checklist.completed.should be nil
   end
 
   it 'initially is not completed' do

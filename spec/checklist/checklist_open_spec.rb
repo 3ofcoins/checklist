@@ -10,6 +10,8 @@ describe Checklist, '#open!' do
     checklist.open?.should be false
     checklist.open!
     checklist.open?.should be true
+    checklist.completed.should == 0
+    checklist.remaining.should == checklist.length
   end
 
   it 'cannot be called twice' do
