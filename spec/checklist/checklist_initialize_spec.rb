@@ -11,8 +11,8 @@ describe Checklist do
     checklist.steps.should eq []
   end
 
-  it 'initially is not running' do
-    checklist.running?.should be false
+  it 'initially is not open' do
+    checklist.open?.should be false
   end
 
   it 'initially is not completed' do

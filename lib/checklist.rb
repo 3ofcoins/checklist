@@ -24,7 +24,7 @@ class Checklist
   end
 
   # true if checklist is started
-  def running?
+  def open?
     !!remaining
   end
 
