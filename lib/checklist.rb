@@ -9,6 +9,7 @@ class Checklist
   def initialize(name)
     @steps = []
     @remaining = nil
+    @completed = nil
     @name = name
   end
 
@@ -33,6 +34,13 @@ class Checklist
     remaining && remaining.empty?
   end
 
+  def open!
+    raise RuntimeError, "Checklist is already open" if open?
+    puts "*** #{name} ***"
+    self.remaining = steps.clone
+    self.completed = []
+  end
+
   private
-  attr_accessor :remaining
+  attr_accessor :remaining, :completed
 end
