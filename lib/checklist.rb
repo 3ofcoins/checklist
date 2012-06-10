@@ -58,6 +58,7 @@ class Checklist
     self
   end
 
+  # Execute one step of the checklist
   def step!
     raise RuntimeError, 'Checklist is completed' if completed?
     remaining_steps.first.run!
