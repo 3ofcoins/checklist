@@ -8,8 +8,8 @@ class Checklist
 
   def initialize(name)
     @steps = []
-    @remaining = nil
-    @completed = nil
+    @remaining_steps = nil
+    @completed_steps = nil
     @name = name
   end
 
@@ -26,21 +26,21 @@ class Checklist
 
   # true if checklist is started
   def open?
-    !!remaining
+    !!remaining_steps
   end
 
-  # true if checklist is started and all steps are completed
+  # true if checklist is started and all steps are completed_steps
   def completed?
-    remaining && remaining.empty?
+    remaining_steps && remaining_steps.empty?
   end
 
   def open!
     raise RuntimeError, "Checklist is already open" if open?
     puts "*** #{name} ***"
-    self.remaining = steps.clone
-    self.completed = []
+    self.remaining_steps = steps.clone
+    self.completed_steps = []
   end
 
   private
-  attr_accessor :remaining, :completed
+  attr_accessor :remaining_steps, :completed_steps
 end
