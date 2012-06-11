@@ -84,6 +84,14 @@ class Checklist
     rv
   end
 
+  # Run the whole thing
+  def run!
+    open!
+    step! until completed?
+  ensure
+    close!
+  end
+
   private
   attr_accessor :remaining_steps, :completed_steps
 end
