@@ -1,6 +1,7 @@
 if ENV['COVERAGE']
   require 'simplecov'
   SimpleCov.start
+  SimpleCov.add_filter('spec')
 end
 
 require 'checklist'
