@@ -1,78 +1,65 @@
 require 'spec_helper'
 
-describe Checklist::Step do
-  it "is a struct with challenge, response, description, and code fields" do
-    step = Checklist::Step.new(
-      'the challenge',
-      'the response',
-      'the description',
-      'some code')
-    step.challenge.should eq('the challenge')
-    step.response.should eq('the response')
-    step.description.should eq('the description')
-    step.code.should eq('some code')
-  end
-end
+describe Checklist, '#step!' do
+  let(:body) { mock('body') }
+  subject { example_checklist(body) }
 
-describe Checklist::Step, "#run!" do
-  let(:code_body) do
-    code_body = double('code body')
-    code_body.should_receive(:poke!)
-    code_body
-  end
-  let(:step) do
-    Checklist::Step.new(
-      'the challenge',
-      'the response',
-      'the description',
-      lambda { code_body.poke! } )
-  end
+  it 'should execute one next step and push it from remaining to completed' do
+    Checklist.expect_open
+    Checklist.expect_steps(0..3)
+    Checklist.expect_nothing_more
+    subject.open!
+    body.expect_steps(0..3)
 
-  it "runs the proc from code field" do
-    step.run!
-  end
+    subject.remaining.should == 4
+    subject.completed.should == 0
 
-  it "prints challenge at the beginning and challenge&response at the end" do
-    Checklist.should_receive(:say).once.with("** the challenge ...").ordered
-    Checklist.should_receive(:say).once.with("** the challenge the response").ordered
-    Checklist.should_receive(:say).exactly(0).times
-    step.run!
+    subject.step!
+
+    subject.remaining.should == 3
+    subject.completed.should == 1
+
+    subject.step!
+    subject.remaining.should == 2
+    subject.completed.should == 2
+
+    subject.step!
+    subject.remaining.should == 1
+    subject.completed.should == 3
+
+    subject.step!
+
+    subject.remaining.should == 0
+    subject.completed.should == 4
   end
 
-  it "does not catch exceptions raised by code" do
-    step.code = lambda { code_body.poke! ; raise RuntimeError }
-    Checklist.should_receive(:say).with("** the challenge ...").once
-    Checklist.should_receive(:say).exactly(0).times
-    lambda {  step.run! }.should raise_error(RuntimeError)
-  end
-end
+  it 'should complete the checklist, eventually' do
+    Checklist.expect_open
+    Checklist.expect_steps(0..3)
+    Checklist.expect_nothing_more
+    subject.open!
+    body.expect_steps(0..3)
 
-describe Checklist, '::step' do
-  it "Creates a runnable Checklist::Step instance" do
-    called = false
-    step = Checklist.step('the challenge', 'the response', 'a description') do
-      called = true
+    subject.length.times do
+      subject.completed?.should be false
+      subject.step!
     end
-    step.challenge.should eq 'the challenge'
-    step.response.should eq 'the response'
-    step.description.should eq 'a description'
-
-    Checklist.should_receive(:say).with("** the challenge ...").once.ordered
-    Checklist.should_receive(:say).with("** the challenge the response").once.ordered
-
-    step.run!
-
-    called.should be_true
+    subject.completed?.should be true
   end
 
-  it "Defaults description to nil" do
-    step = Checklist.step('the challenge', 'the response') { nil }
-    step.challenge.should eq 'the challenge'
-    step.response.should eq 'the response'
-    step.description.should be nil    
+  it 'should not be allowed when list is completed' do
+    Checklist.expect_open
+    Checklist.expect_steps(0..3)
+    Checklist.expect_nothing_more
+    subject.open!
+    body.expect_steps(0..3)
+
+    subject.length.times { subject.step! }
+    expect { subject.step! }.to raise_exception(RuntimeError)
   end
 
-  it "Requires block" do
-    lambda { Checklist.step('foo', 'bar') }.should raise_error(ArgumentError)
+  it 'should be disallowed when list is not open' do
+    # Look, Ma, no open!
+    expect { subject.step! }.to raise_exception(RuntimeError)
   end
 end
