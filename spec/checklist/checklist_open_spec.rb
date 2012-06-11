@@ -2,10 +2,9 @@ require 'spec_helper'
 
 describe Checklist, '#open!' do
   subject { example_checklist }
-  before(:each) { STDOUT.stub(:puts) }
 
   it 'opens the checklist' do
-    STDOUT.expect_open
+    Checklist.expect_open
     subject.open?.should be false
     subject.open!
     subject.open?.should be true

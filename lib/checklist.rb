@@ -4,6 +4,10 @@ require "checklist/version"
 require 'checklist/step'
 
 class Checklist
+  def self.say(message='')
+    puts message
+  end
+
   attr_reader :steps, :name
 
   def initialize(name)
@@ -52,7 +56,7 @@ class Checklist
 
   def open!
     raise RuntimeError, "Checklist is already open" if open?
-    puts "*** #{name} ***"
+    Checklist.say "*** #{name} ***"
     self.remaining_steps = steps.clone
     self.completed_steps = []
     self
@@ -70,13 +74,13 @@ class Checklist
   def close!
     raise RuntimeError, 'Checklist is not open' unless open?
     if completed?
-      puts '*** All steps completed ***'
+      Checklist.say '*** All steps completed ***'
     else
-      puts "*** #{remaining_steps.length} STEPS NOT COMPLETED ***"
+      Checklist.say "*** #{remaining_steps.length} STEPS NOT COMPLETED ***"
       remaining_steps.each do |ss|
-        puts "** #{ss.challenge} (#{ss.response})"
-        puts ss.description if ss.description
-        puts
+        Checklist.say "** #{ss.challenge} (#{ss.response})"
+        Checklist.say ss.description if ss.description
+        Checklist.say
       end
     end
     rv = remaining_steps

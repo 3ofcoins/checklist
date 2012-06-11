@@ -3,15 +3,14 @@ require 'spec_helper'
 describe Checklist, '#run!' do
   let(:body) { mock('body') }
   subject { example_checklist(body) }
-  before(:each) { STDOUT.stub(:puts) }
 
   it "should call all the methods" do
     subject
 
-    STDOUT.expect_open
-    STDOUT.expect_steps(0..3)
-    STDOUT.expect_completion
-    STDOUT.expect_nothing_more
+    Checklist.expect_open
+    Checklist.expect_steps(0..3)
+    Checklist.expect_completion
+    Checklist.expect_nothing_more
     body.expect_steps(0..3)
  
     def should_receive_and_call(method)
@@ -34,15 +33,15 @@ describe Checklist, '#run!' do
     end
     subject.step('six', 'done', 'a description') { body.poke6! }
 
-    STDOUT.expect_open
-    STDOUT.expect_steps(0..3)
-    STDOUT.expect_puts('*** 2 STEPS NOT COMPLETED ***')
-    STDOUT.expect_puts('** five (bomb)')
-    STDOUT.expect_puts(no_args())
-    STDOUT.expect_puts('** six (done)')
-    STDOUT.expect_puts('a description')
-    STDOUT.expect_puts(no_args())
-    STDOUT.expect_nothing_more
+    Checklist.expect_open
+    Checklist.expect_steps(0..3)
+    Checklist.expect_say('*** 2 STEPS NOT COMPLETED ***')
+    Checklist.expect_say('** five (bomb)')
+    Checklist.expect_say(no_args())
+    Checklist.expect_say('** six (done)')
+    Checklist.expect_say('a description')
+    Checklist.expect_say(no_args())
+    Checklist.expect_nothing_more
     body.expect_steps(0..3)
 
     expect { subject.run! }.to raise_exception(Exception)

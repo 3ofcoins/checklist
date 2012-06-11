@@ -3,15 +3,14 @@ require 'spec_helper'
 describe Checklist, '#close!' do
   let(:body) { mock('body') }
   subject { example_checklist(body) }
-  before(:each) { STDOUT.stub(:puts) }
 
   it "should report checklist completion" do
-    STDOUT.expect_open
+    Checklist.expect_open
     subject.open!
 
-    STDOUT.expect_steps(0..3)
-    STDOUT.expect_completion
-    STDOUT.expect_nothing_more
+    Checklist.expect_steps(0..3)
+    Checklist.expect_completion
+    Checklist.expect_nothing_more
     body.expect_steps(0..3)
 
     4.times { subject.step! }
@@ -19,15 +18,15 @@ describe Checklist, '#close!' do
   end
 
   it "should report outstanding steps" do
-    STDOUT.expect_open
-    STDOUT.expect_steps(0..1)
-    STDOUT.expect_puts('*** 2 STEPS NOT COMPLETED ***')
+    Checklist.expect_open
+    Checklist.expect_steps(0..1)
+    Checklist.expect_say('*** 2 STEPS NOT COMPLETED ***')
     (2..3).each do |i|
-      STDOUT.expect_puts("** #{EXAMPLE_STEPS[i][0]} (#{EXAMPLE_STEPS[i][1]})")
-      STDOUT.expect_puts(EXAMPLE_STEPS[i][3]) if EXAMPLE_STEPS[i][3]
-      STDOUT.expect_puts(no_args())
+      Checklist.expect_say("** #{EXAMPLE_STEPS[i][0]} (#{EXAMPLE_STEPS[i][1]})")
+      Checklist.expect_say(EXAMPLE_STEPS[i][3]) if EXAMPLE_STEPS[i][3]
+      Checklist.expect_say(no_args())
     end
-    STDOUT.expect_nothing_more
+    Checklist.expect_nothing_more
 
     subject.open!
     body.expect_steps(0..1)

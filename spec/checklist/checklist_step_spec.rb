@@ -4,14 +4,10 @@ describe Checklist, '#step!' do
   let(:body) { mock('body') }
   subject { example_checklist(body) }
 
-  before(:each) do
-    STDOUT.stub(:puts)
-  end
-
   it 'should execute one next step and push it from remaining to completed' do
-    STDOUT.expect_open
-    STDOUT.expect_steps(0..3)
-    STDOUT.expect_nothing_more
+    Checklist.expect_open
+    Checklist.expect_steps(0..3)
+    Checklist.expect_nothing_more
     subject.open!
     body.expect_steps(0..3)
 
@@ -38,9 +34,9 @@ describe Checklist, '#step!' do
   end
 
   it 'should complete the checklist, eventually' do
-    STDOUT.expect_open
-    STDOUT.expect_steps(0..3)
-    STDOUT.expect_nothing_more
+    Checklist.expect_open
+    Checklist.expect_steps(0..3)
+    Checklist.expect_nothing_more
     subject.open!
     body.expect_steps(0..3)
 
@@ -52,9 +48,9 @@ describe Checklist, '#step!' do
   end
 
   it 'should not be allowed when list is completed' do
-    STDOUT.expect_open
-    STDOUT.expect_steps(0..3)
-    STDOUT.expect_nothing_more
+    Checklist.expect_open
+    Checklist.expect_steps(0..3)
+    Checklist.expect_nothing_more
     subject.open!
     body.expect_steps(0..3)
 

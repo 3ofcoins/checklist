@@ -28,23 +28,21 @@ describe Checklist::Step, "#run!" do
       lambda { code_body.poke! } )
   end
 
-  before(:each) { STDOUT.stub(:puts) }
-
   it "runs the proc from code field" do
     step.run!
   end
 
   it "prints challenge at the beginning and challenge&response at the end" do
-    STDOUT.should_receive(:puts).once.with("** the challenge ...").ordered
-    STDOUT.should_receive(:puts).once.with("** the challenge the response").ordered
-    STDOUT.should_receive(:puts).exactly(0).times
+    Checklist.should_receive(:say).once.with("** the challenge ...").ordered
+    Checklist.should_receive(:say).once.with("** the challenge the response").ordered
+    Checklist.should_receive(:say).exactly(0).times
     step.run!
   end
 
   it "does not catch exceptions raised by code" do
     step.code = lambda { code_body.poke! ; raise RuntimeError }
-    STDOUT.should_receive(:puts).with("** the challenge ...").once
-    STDOUT.should_receive(:puts).exactly(0).times
+    Checklist.should_receive(:say).with("** the challenge ...").once
+    Checklist.should_receive(:say).exactly(0).times
     lambda {  step.run! }.should raise_error(RuntimeError)
   end
 end
@@ -59,8 +57,8 @@ describe Checklist, '::step' do
     step.response.should eq 'the response'
     step.description.should eq 'a description'
 
-    STDOUT.should_receive(:puts).with("** the challenge ...").once.ordered
-    STDOUT.should_receive(:puts).with("** the challenge the response").once.ordered
+    Checklist.should_receive(:say).with("** the challenge ...").once.ordered
+    Checklist.should_receive(:say).with("** the challenge the response").once.ordered
 
     step.run!
 
