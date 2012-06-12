@@ -38,8 +38,8 @@ class Checklist
     end
 
     def incomplete(checklist, remaining_steps)
-      fmtd.redisplay "[[red]#{marks[:cross]}[/]] #{checklist.current.challenge} [red]FAILED[/]\n"
-      remaining_steps.each do |step|
+      fmtd.redisplay "[[red]#{marks[:cross]}[/]] #{remaining_steps.first.challenge} [red]FAILED[/]\n"
+      remaining_steps[1..remaining_steps.length].each do |step|
         fmtd.display "[ ] #{step.challenge} [yellow]PENDING[/]\n"
       end
       fmtd.display "#{checklist.remaining} of #{checklist.length} steps [red]NOT COMPLETED[/]:\n"
