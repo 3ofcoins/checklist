@@ -26,11 +26,11 @@ class Checklist
     end
 
     def start(step)
-      fmtd.display "[ ] [yellow]#{step.challenge}[/] ..."
+      fmtd.display "  [ ] [yellow]#{step.challenge}[/] ..."
     end
 
     def finish(step)
-      fmtd.redisplay "[[green]#{marks[:tick]}[/]] #{step.challenge} [green]#{step.response}[/]\n"
+      fmtd.redisplay "  [[green]#{marks[:tick]}[/]] #{step.challenge} [green]#{step.response}[/]\n"
     end
 
     def complete(checklist)
@@ -38,14 +38,17 @@ class Checklist
     end
 
     def incomplete(checklist, remaining_steps)
-      fmtd.redisplay "[[red]#{marks[:cross]}[/]] #{remaining_steps.first.challenge} [red]FAILED[/]\n"
+      fmtd.redisplay "  [[red]#{marks[:cross]}[/]] #{remaining_steps.first.challenge} [red]FAILED[/]\n"
       remaining_steps[1..remaining_steps.length].each do |step|
-        fmtd.display "[ ] #{step.challenge} [yellow]PENDING[/]\n"
+        fmtd.display "  [ ] #{step.challenge} [yellow]PENDING[/]\n"
       end
-      fmtd.display "#{checklist.remaining} of #{checklist.length} steps [red]NOT COMPLETED[/]:\n"
+      fmtd.display "\n[indent]#{checklist.remaining} of #{checklist.length} steps [red]NOT COMPLETED[/]:\n"
 
-      fmtd.display_table(
-        remaining_steps.map(&:to_hash), %w(Challenge Response Description))
+      fmtd.indent do
+        fmtd.display_table(
+          remaining_steps.map(&:to_hash),
+          %w(Challenge Response Description))
+      end
     end
 
     private
