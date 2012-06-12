@@ -4,12 +4,16 @@ describe Checklist, '#open!' do
   subject { example_checklist }
 
   it 'opens the checklist' do
-    Checklist.expect_open
     subject.open?.should be false
     subject.open!
     subject.open?.should be true
     subject.completed.should == 0
     subject.remaining.should == subject.length
+  end
+
+  it "reports the checklist header" do
+    subject.ui.should_receive(:header).with(subject)
+    subject.open!
   end
 
   it 'cannot be called twice' do

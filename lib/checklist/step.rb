@@ -2,9 +2,7 @@ class Checklist
   Step = Struct.new(:challenge, :response, :description, :code) do
     # Run checklist's body code
     def run!
-      Checklist.say "** #{self.challenge} ..."
       self.code.call
-      Checklist.say "** #{self.challenge} #{self.response}"
     end
   end
 

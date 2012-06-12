@@ -1,15 +1,9 @@
 require 'spec_helper'
 
 describe Checklist, '#run!' do
-  subject { example_checklist() }
+  subject { example_checklist }
 
-  it "should call all the methods" do
-    Checklist.expect_open
-    Checklist.expect_steps(0..3)
-    Checklist.expect_completion
-    Checklist.expect_nothing_more
-    subject.body.expect_steps(0..3)
- 
+  it "should call all the methods and execute all the steps" do
     def should_receive_and_call(method)
       original_method = subject.method(method)
       subject.should_receive(method) { original_method.call }
@@ -20,31 +14,31 @@ describe Checklist, '#run!' do
     should_receive_and_call(:step!).exactly(subject.length).times
     should_receive_and_call(:close!).once
 
+    subject.body.should_receive(:step).with(0).once
+    subject.body.should_receive(:step).with(1).once
+    subject.body.should_receive(:step).with(2).once
+    subject.body.should_receive(:step).with(3).once
+
     subject.run!
   end
 
   it 'should return the checklist itself' do
-    subject.body.expect_steps(0..3)
     subject.run!.should == subject
   end
 
   it 'should raise and report incomplete steps if a step bombs' do
     subject.step('five', 'bomb') do
       raise Exception, 'as planned'
-      body.poke5!
+      body.step(5)
     end
-    subject.step('six', 'done', 'a description') { body.poke6! }
+    subject.step('six', 'done', 'a description') { body.step(6) }
 
-    Checklist.expect_open
-    Checklist.expect_steps(0..3)
-    Checklist.expect_say('*** 2 STEPS NOT COMPLETED ***')
-    Checklist.expect_say('** five (bomb)')
-    Checklist.expect_say(no_args())
-    Checklist.expect_say('** six (done)')
-    Checklist.expect_say('a description')
-    Checklist.expect_say(no_args())
-    Checklist.expect_nothing_more
-    subject.body.expect_steps(0..3)
+    subject.body.should_not_receive(:step).with(5)
+    subject.body.should_not_receive(:step).with(6)
+
+    subject.ui.should_receive(:incomplete).with(subject).once
+    subject.ui.should_receive(:describe).with(subject.steps[4]).once
+    subject.ui.should_receive(:describe).with(subject.steps[5]).once
 
     expect { subject.run! }.to raise_exception(Exception)
    end

@@ -32,17 +32,8 @@ describe Checklist::Step, "#run!" do
     step.run!
   end
 
-  it "prints challenge at the beginning and challenge&response at the end" do
-    Checklist.should_receive(:say).once.with("** the challenge ...").ordered
-    Checklist.should_receive(:say).once.with("** the challenge the response").ordered
-    Checklist.should_receive(:say).exactly(0).times
-    step.run!
-  end
-
   it "does not catch exceptions raised by code" do
     step.code = lambda { code_body.poke! ; raise RuntimeError }
-    Checklist.should_receive(:say).with("** the challenge ...").once
-    Checklist.should_receive(:say).exactly(0).times
     lambda {  step.run! }.should raise_error(RuntimeError)
   end
 end
@@ -57,11 +48,7 @@ describe Checklist, '::step' do
     step.response.should eq 'the response'
     step.description.should eq 'a description'
 
-    Checklist.should_receive(:say).with("** the challenge ...").once.ordered
-    Checklist.should_receive(:say).with("** the challenge the response").once.ordered
-
     step.run!
-
     called.should be_true
   end
 

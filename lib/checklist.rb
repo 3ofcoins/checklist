@@ -2,20 +2,18 @@ require 'must_be'
 
 require "checklist/version"
 require 'checklist/step'
+require 'checklist/ui'
 require 'checklist/wrapper'
 
 class Checklist
-  def self.say(message='')
-    puts message
-  end
+  attr_reader :steps, :name, :ui
 
-  attr_reader :steps, :name
-
-  def initialize(name)
+  def initialize(name, options={})
     @steps = []
     @remaining_steps = nil
     @completed_steps = nil
     @name = name
+    @ui = options[:ui] || Checklist::UI.new
   end
 
   # appendd a Checklist::Step to the checklist
@@ -57,7 +55,7 @@ class Checklist
 
   def open!
     raise RuntimeError, "Checklist is already open" if open?
-    Checklist.say "*** #{name} ***"
+    ui.header(self)
     self.remaining_steps = steps.clone
     self.completed_steps = []
     self
@@ -67,7 +65,10 @@ class Checklist
   def step!
     raise RuntimeError, 'Checklist is not open' unless open?
     raise RuntimeError, 'Checklist is completed' if completed?
-    remaining_steps.first.run!
+    step = remaining_steps.first
+    ui.start(step)
+    step.run!
+    ui.finish(step)
     completed_steps << remaining_steps.shift
   end
 
@@ -75,14 +76,10 @@ class Checklist
   def close!
     raise RuntimeError, 'Checklist is not open' unless open?
     if completed?
-      Checklist.say '*** All steps completed ***'
+      ui.complete(self)
     else
-      Checklist.say "*** #{remaining_steps.length} STEPS NOT COMPLETED ***"
-      remaining_steps.each do |ss|
-        Checklist.say "** #{ss.challenge} (#{ss.response})"
-        Checklist.say ss.description if ss.description
-        Checklist.say
-      end
+      ui.incomplete(self)
+      remaining_steps.each { |ss| ui.describe(ss) }
     end
     rv = remaining_steps
     self.remaining_steps = self.completed_steps = nil
