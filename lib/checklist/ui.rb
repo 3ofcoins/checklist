@@ -1,9 +1,20 @@
+# -*- coding: utf-8 -*-
 require 'formatador'
+require 'locale'
 
 class Checklist
   class UI
+    UTF8_MARKS = {
+      :tick => '✓',
+      :cross => '✗' }
+
+    ASCII_MARKS = {
+      :tick => '[bold]+',
+      :cross => '[bold]X' }
+    
     def initialize
       @fmtd = Formatador.new
+      @marks = Locale.charset == 'UTF-8' ? UTF8_MARKS : ASCII_MARKS
     end
 
     def say(msg='')
@@ -19,7 +30,7 @@ class Checklist
     end
 
     def finish(step)
-      fmtd.redisplay "[[green][bold]+[/]] #{step.challenge} [green]#{step.response}[/]\n"
+      fmtd.redisplay "[[green]#{marks[:tick]}[/]] #{step.challenge} [green]#{step.response}[/]\n"
     end
 
     def complete(checklist)
@@ -27,14 +38,17 @@ class Checklist
     end
 
     def incomplete(checklist, remaining_steps)
-      fmtd.redisplay "[[bold][red]X[/]] #{checklist.current.challenge} [red]FAILED[/]\n"
-      fmtd.display "[red]#{checklist.remaining}/#{checklist.length} STEPS [bold]NOT COMPLETED[/] [bold]:[/]\n"
+      fmtd.redisplay "[[red]#{marks[:cross]}[/]] #{checklist.current.challenge} [red]FAILED[/]\n"
+      remaining_steps.each do |step|
+        fmtd.display "[ ] #{step.challenge} [yellow]PENDING[/]\n"
+      end
+      fmtd.display "#{checklist.remaining} of #{checklist.length} steps [red]NOT COMPLETED[/]:\n"
 
       fmtd.display_table(
         remaining_steps.map(&:to_hash), %w(Challenge Response Description))
     end
 
     private
-    attr_reader :fmtd
+    attr_reader :fmtd, :marks
   end
 end
