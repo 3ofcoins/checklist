@@ -1,0 +1,9 @@
+
+* Features I'd like to see
+** TODO Colorful console UI
+   - formatator gem
+** TODO Separate "verify" lambda to call
+** predefined steps & helper functions
+*** TODO wait for user confirmation
+*** TODO run a rake task
+** TODO "Retry" exception
