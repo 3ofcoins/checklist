@@ -1,18 +1,16 @@
 require 'spec_helper'
 
 describe Checklist, '#close!' do
-  let(:body) { mock('body') }
-  subject { example_checklist(body) }
+  subject { example_checklist() }
 
   it "should report checklist completion" do
     Checklist.expect_open
-    subject.open!
-
     Checklist.expect_steps(0..3)
     Checklist.expect_completion
     Checklist.expect_nothing_more
-    body.expect_steps(0..3)
+    subject.body.expect_steps(0..3)
 
+    subject.open!
     4.times { subject.step! }
     subject.close!
   end
@@ -27,17 +25,18 @@ describe Checklist, '#close!' do
       Checklist.expect_say(no_args())
     end
     Checklist.expect_nothing_more
+    subject.body.expect_steps(0..1)
 
     subject.open!
-    body.expect_steps(0..1)
     2.times { subject.step! }
     subject.close!
 
   end
 
   it 'should return outstanding steps' do
+    subject.body.expect_steps(0)
+
     subject.open!
-    body.expect_steps(0)
     subject.step!
     rv = subject.close!
     rv.should be_instance_of Array

@@ -19,16 +19,8 @@ EXAMPLE_STEPS = [
   [ 'three', 'three it is',  :poke3! ],
   [ 'four',  'here you are', :poke4!, 'A surprise description' ]]
 
-class Checklist
-  def fill_example_steps!(body)
-    EXAMPLE_STEPS.each do |challenge, response, method, description|
-      self.step(challenge, response, description) { body and body.send(method) }
-    end
-    self
-  end
-end
-
 def example_checklist(body=nil)
+  body = RSpec::Mocks::Mock.new('body') if body.nil?
   if body
     class << body
       def expect_steps(steps)
@@ -39,7 +31,19 @@ def example_checklist(body=nil)
       end
     end
   end
-  Checklist.new('Test').fill_example_steps!(body)
+
+  cl = Checklist.new('Test')
+
+  class << cl
+    attr_accessor :body
+  end
+  cl.body = body
+
+  EXAMPLE_STEPS.each do |challenge, response, method, description|
+    cl.step(challenge, response, description) { body and body.send(method) }
+  end
+
+  cl
 end
 
 class << Checklist

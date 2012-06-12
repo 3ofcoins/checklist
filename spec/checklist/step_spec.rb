@@ -1,15 +1,15 @@
 require 'spec_helper'
 
 describe Checklist, '#step!' do
-  let(:body) { mock('body') }
-  subject { example_checklist(body) }
+  subject { example_checklist() }
 
   it 'should execute one next step and push it from remaining to completed' do
     Checklist.expect_open
     Checklist.expect_steps(0..3)
     Checklist.expect_nothing_more
+    subject.body.expect_steps(0..3)
+
     subject.open!
-    body.expect_steps(0..3)
 
     subject.remaining.should == 4
     subject.completed.should == 0
@@ -37,13 +37,15 @@ describe Checklist, '#step!' do
     Checklist.expect_open
     Checklist.expect_steps(0..3)
     Checklist.expect_nothing_more
+    subject.body.expect_steps(0..3)
+
     subject.open!
-    body.expect_steps(0..3)
 
     subject.length.times do
       subject.completed?.should be false
       subject.step!
     end
+
     subject.completed?.should be true
   end
 
@@ -51,8 +53,9 @@ describe Checklist, '#step!' do
     Checklist.expect_open
     Checklist.expect_steps(0..3)
     Checklist.expect_nothing_more
+    subject.body.expect_steps(0..3)
+
     subject.open!
-    body.expect_steps(0..3)
 
     subject.length.times { subject.step! }
     expect { subject.step! }.to raise_exception(RuntimeError)

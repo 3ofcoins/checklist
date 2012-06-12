@@ -1,17 +1,14 @@
 require 'spec_helper'
 
 describe Checklist, '#run!' do
-  let(:body) { mock('body') }
-  subject { example_checklist(body) }
+  subject { example_checklist() }
 
   it "should call all the methods" do
-    subject
-
     Checklist.expect_open
     Checklist.expect_steps(0..3)
     Checklist.expect_completion
     Checklist.expect_nothing_more
-    body.expect_steps(0..3)
+    subject.body.expect_steps(0..3)
  
     def should_receive_and_call(method)
       original_method = subject.method(method)
@@ -27,8 +24,7 @@ describe Checklist, '#run!' do
   end
 
   it 'should return the checklist itself' do
-    subject
-    body.expect_steps(0..3)
+    subject.body.expect_steps(0..3)
     subject.run!.should == subject
   end
 
@@ -48,7 +44,7 @@ describe Checklist, '#run!' do
     Checklist.expect_say('a description')
     Checklist.expect_say(no_args())
     Checklist.expect_nothing_more
-    body.expect_steps(0..3)
+    subject.body.expect_steps(0..3)
 
     expect { subject.run! }.to raise_exception(Exception)
    end
