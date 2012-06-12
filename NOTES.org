@@ -7,3 +7,9 @@
 *** TODO wait for user confirmation
 *** TODO run a rake task
 ** TODO "Retry" exception
+** TODO Checklist sections
+** Export checklists
+*** TODO PDF
+*** TODO HTML
+*** TODO Active HTML (w/ JS to go through the checklist)
+*** TODO http://checklist.foreflight.com/
