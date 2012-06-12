@@ -12,10 +12,7 @@ describe Checklist, '#close!' do
   end
 
   it "should report outstanding steps" do
-    subject.ui.should_receive(:incomplete).with(subject).ordered
-    (2..3).each do |i|
-      subject.ui.should_receive(:describe).with(subject.steps[i]).ordered
-    end
+    subject.ui.should_receive(:incomplete).with(subject, subject.steps[2..3])
 
     subject.open!
     2.times { subject.step! }

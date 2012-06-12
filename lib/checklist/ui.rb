@@ -1,33 +1,40 @@
+require 'formatador'
+
 class Checklist
   class UI
+    def initialize
+      @fmtd = Formatador.new
+    end
+
     def say(msg='')
-      puts msg
+      fmtd.display "#{msg}\n"
     end
 
     def header(checklist)
-      say "*** #{checklist.name} ***"
+      fmtd.display "[bold][yellow]CHECKLIST[/][yellow]:[/] [bold]#{checklist.name}[/]\n"
     end
 
     def start(step)
-      say "** #{step.challenge} .."
+      fmtd.display "[ ] [yellow]#{step.challenge}[/] ..."
     end
 
     def finish(step)
-      say "** #{step.challenge} #{step.response}"
+      fmtd.redisplay "[[green][bold]+[/]] #{step.challenge} [green]#{step.response}[/]\n"
     end
 
     def complete(checklist)
-      say "*** All #{checklist.length} steps completed ***"
+      fmtd.display "[green]All #{checklist.length} steps [bold]completed[/]\n"
     end
 
-    def incomplete(checklist)
-      say "*** #{checklist.remaining}/#{checklist.length} STEPS NOT COMPLETED ***"
+    def incomplete(checklist, remaining_steps)
+      fmtd.redisplay "[[bold][red]X[/]] #{checklist.current.challenge} [red]FAILED[/]\n"
+      fmtd.display "[red]#{checklist.remaining}/#{checklist.length} STEPS [bold]NOT COMPLETED[/] [bold]:[/]\n"
+
+      fmtd.display_table(
+        remaining_steps.map(&:to_hash), %w(Challenge Response Description))
     end
 
-    def describe(step)
-      say "** #{step.challenge} (#{step.response})"
-      say step.description if step.description
-      say
-    end
+    private
+    attr_reader :fmtd
   end
 end

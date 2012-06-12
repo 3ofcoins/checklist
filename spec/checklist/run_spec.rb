@@ -35,10 +35,7 @@ describe Checklist, '#run!' do
 
     subject.body.should_not_receive(:step).with(5)
     subject.body.should_not_receive(:step).with(6)
-
-    subject.ui.should_receive(:incomplete).with(subject).once
-    subject.ui.should_receive(:describe).with(subject.steps[4]).once
-    subject.ui.should_receive(:describe).with(subject.steps[5]).once
+    subject.ui.should_receive(:incomplete).with(subject, subject.steps[4..5])
 
     expect { subject.run! }.to raise_exception(Exception)
    end

@@ -6,12 +6,13 @@ require 'checklist/ui'
 require 'checklist/wrapper'
 
 class Checklist
-  attr_reader :steps, :name, :ui
+  attr_reader :steps, :current, :name, :ui
 
   def initialize(name, options={})
     @steps = []
     @remaining_steps = nil
     @completed_steps = nil
+    @current = nil
     @name = name
     @ui = options[:ui] || Checklist::UI.new
   end
@@ -65,10 +66,10 @@ class Checklist
   def step!
     raise RuntimeError, 'Checklist is not open' unless open?
     raise RuntimeError, 'Checklist is completed' if completed?
-    step = remaining_steps.first
-    ui.start(step)
-    step.run!
-    ui.finish(step)
+    self.current = remaining_steps.first
+    ui.start(current)
+    current.run!
+    ui.finish(current)
     completed_steps << remaining_steps.shift
   end
 
@@ -78,11 +79,13 @@ class Checklist
     if completed?
       ui.complete(self)
     else
-      ui.incomplete(self)
-      remaining_steps.each { |ss| ui.describe(ss) }
+      ui.incomplete(self, remaining_steps)
     end
     rv = remaining_steps
-    self.remaining_steps = self.completed_steps = nil
+    self.current = 
+      self.remaining_steps = 
+      self.completed_steps =
+      nil
     rv
   end
 
@@ -96,5 +99,6 @@ class Checklist
   end
 
   private
+  attr_writer :current
   attr_accessor :remaining_steps, :completed_steps
 end

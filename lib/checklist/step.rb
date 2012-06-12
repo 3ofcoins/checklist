@@ -4,6 +4,12 @@ class Checklist
     def run!
       self.code.call
     end
+
+    def to_hash
+      { "Challenge" => self.challenge,
+        "Response" => self.response, 
+        "Description" => self.description }
+    end
   end
 
   # Create a new Step instance
