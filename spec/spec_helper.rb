@@ -2,6 +2,7 @@ if ENV['COVERAGE']
   require 'simplecov'
   SimpleCov.start
   SimpleCov.add_filter('spec')
+  SimpleCov.add_filter('lib/checklist/ui.rb') # not covered by tests
 end
 
 require 'rspec/expectations'
