@@ -92,6 +92,7 @@ class Checklist
   def run!
     open!
     step! until completed?
+    self
   ensure
     close!
   end

@@ -26,6 +26,12 @@ describe Checklist, '#run!' do
     subject.run!
   end
 
+  it 'should return the checklist itself' do
+    subject
+    body.expect_steps(0..3)
+    subject.run!.should == subject
+  end
+
   it 'should raise and report incomplete steps if a step bombs' do
     subject.step('five', 'bomb') do
       raise Exception, 'as planned'
