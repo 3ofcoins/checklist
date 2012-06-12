@@ -1,6 +1,9 @@
 # Checklist
 
-TODO: Write a gem description
+Execute your tasks as checklist, get clear status of what has been
+done and what has not on your terminal.
+
+![A screenshot is worth thousand words](http://cloud.github.com/downloads/3ofcoins/checklist/Terminal%20—%20zsh%20—%20157×40.jpg)
 
 [![Build Status](https://secure.travis-ci.org/3ofcoins/checklist.png?branch=master)](http://travis-ci.org/3ofcoins/checklist)
 
@@ -26,7 +29,7 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+For now, see the examples/ directory and test cases. More docs will follow.
 
 ## Contributing
 
