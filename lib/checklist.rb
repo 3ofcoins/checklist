@@ -2,6 +2,7 @@ require 'must_be'
 
 require "checklist/version"
 require 'checklist/step'
+require 'checklist/wrapper'
 
 class Checklist
   def self.say(message='')
