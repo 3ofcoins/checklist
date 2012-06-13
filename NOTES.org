@@ -8,6 +8,21 @@
 *** TODO run a rake task
 ** TODO "Retry" exception
 ** TODO Checklist sections
+** TODO Per-task responses
+   If response is nil (or "AS REQD"), return value of the block should
+   be used.
+   Callable responses?
+** TODO Skip individual steps
+** TODO Responses entered as keywords should be processed
+   - uppercased
+   - underscore translated to space
+** TODO Pass Step instance to step implementation blocks
+   (or challenge/response/description)
+** TODO Separate "desc" method like for rake tasks
+** TODO Automatic puts / ui.newline call for tasks that output stuff
+** TODO Use terminal-table for summary
+   Formatador's tables can't handle multiline content.
+   https://github.com/visionmedia/terminal-table
 ** Export checklists
 *** TODO PDF
 *** TODO HTML
