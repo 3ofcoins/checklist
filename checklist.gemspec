@@ -7,6 +7,7 @@ Gem::Specification.new do |gem|
   gem.description   = 'Multi-step checklist execution'
   gem.summary       = 'Define and execute a checklist'
   gem.homepage      = "https://github.com/3ofcoins/checklist"
+  gem.licenses      = ['MIT']
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
