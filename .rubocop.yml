@@ -1,0 +1,12 @@
+AllCops:
+  Exclude:
+    - tmp/**/*
+
+Documentation:
+  Enabled: false
+
+# Style/RegexpLiteral:
+#   Enabled: false
+
+Metrics/MethodLength:
+  Max: 23

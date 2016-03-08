@@ -13,4 +13,4 @@ task :rubocop do
   sh 'rubocop'
 end
 
-task :default => [:rubocop, :spec]
+task default: [:rubocop, :spec]

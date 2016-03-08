@@ -11,7 +11,7 @@ describe Checklist, '#open!' do
     expect { subject.remaining == subject.length }
   end
 
-  it "reports the checklist header" do
+  it 'reports the checklist header' do
     subject.open!
     expect { subject.ui.record.include? [:header, subject] }
   end
@@ -23,7 +23,8 @@ describe Checklist, '#open!' do
 
   it 'prevents adding new steps' do
     subject.open!
-    expect { rescuing { subject.step('one', 'one done') { nil } }.is_a?(RuntimeError) }
+    exc = rescuing { subject.step('one', 'one done') { nil } }
+    expect { exc.is_a?(RuntimeError) }
   end
 
   it 'returns checklist itself' do

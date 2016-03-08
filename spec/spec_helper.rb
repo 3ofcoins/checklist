@@ -19,7 +19,7 @@ require 'wrong'
 
 Wrong.config.alias_assert :expect, override: true
 
-class Minitest::Spec
+class Minitest::Spec # rubocop:disable Style/ClassAndModuleChildren
   include Wrong::Assert
   include Wrong::Helpers
 
@@ -43,7 +43,7 @@ class Checklist
         @record = []
       end
 
-      def say(msg='')
+      def say(msg = '')
         @record << [:say, msg]
       end
 
@@ -83,10 +83,10 @@ class Checklist
 end
 
 EXAMPLE_STEPS = [
-  [ 'one',   'one done' ],
-  [ 'two',   'check two' ],
-  [ 'three', 'three it is' ],
-  [ 'four',  'here you are', 'A surprise description' ]]
+  ['one',   'one done'],
+  ['two',   'check two'],
+  ['three', 'three it is'],
+  ['four',  'here you are', 'A surprise description']].freeze
 
 def example_checklist
   body = Checklist::Spec::Body.new

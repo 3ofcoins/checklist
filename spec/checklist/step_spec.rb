@@ -1,7 +1,7 @@
 require_relative '../spec_helper'
 
 describe Checklist, '#step!' do
-  subject { example_checklist() }
+  subject { example_checklist }
 
   it 'should execute one next step and push it from remaining to completed' do
     subject.open!

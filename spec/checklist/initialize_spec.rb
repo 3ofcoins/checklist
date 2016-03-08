@@ -3,13 +3,13 @@ require_relative '../spec_helper'
 describe Checklist do
   let(:checklist) { Checklist.new('Test') }
 
-  it "has a name" do
+  it 'has a name' do
     expect { checklist.name == 'Test' }
   end
 
   it 'initially has an empty step list' do
-    expect { checklist.steps == [] }
-    expect { checklist.length == 0 }
+    expect { checklist.steps.empty? }
+    expect { checklist.empty? }
   end
 
   it 'initially is not open' do
@@ -27,7 +27,7 @@ describe Checklist, '#<<' do
   let(:checklist) { Checklist.new('Test') }
 
   it 'adds new step to a checklist' do
-    checklist.steps == []
+    expect { checklist.steps.empty? }
     step = Checklist.step('foo', 'bar') { nil }
     checklist << step
     expect { checklist.steps.length == 1 }
@@ -36,7 +36,7 @@ describe Checklist, '#<<' do
 
   it 'requires argument to be a step' do
     raise MiniTest::Skip
-    expect {  rescuing { checklist << 23 }.is_a? MustBe::Note }
+    expect { rescuing { checklist << 23 }.is_a? MustBe::Note } # rubocop:disable Lint/UnreachableCode,Metrics/LineLength
   end
 end
 
@@ -44,7 +44,7 @@ describe Checklist, '#step' do
   let(:checklist) { Checklist.new('Test') }
 
   it 'adds new step to a checklist' do
-    expect { checklist.steps == [] }
+    expect { checklist.steps.empty? }
     checklist.step('foo', 'bar') { 23 }
     expect { checklist.steps.length == 1 }
     expect { checklist.steps.first.challenge == 'foo' }
