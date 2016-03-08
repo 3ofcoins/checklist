@@ -1,17 +1,84 @@
+# -*- mode: ruby; coding: utf-8 -*-
+
+require 'rubygems'
+require 'bundler/setup'
+
 if ENV['COVERAGE']
   require 'simplecov'
-  SimpleCov.start
-  SimpleCov.add_filter('spec')
-  SimpleCov.add_filter('lib/checklist/ui.rb') # not covered by tests
+  SimpleCov.start do
+    add_filter '/spec/' unless ENV['SPEC_COVERAGE']
+    add_filter('lib/checklist/ui.rb') # not covered by tests
+  end
+  SimpleCov.command_name 'spec'
 end
 
-require 'rspec/expectations'
-require 'rspec/mocks'
+require 'minitest/autorun'
+require 'minitest/spec'
+require 'minitest/pride' if $stdout.tty?
+require 'wrong'
+
+Wrong.config.alias_assert :expect, override: true
+
+class Minitest::Spec
+  include Wrong::Assert
+  include Wrong::Helpers
+
+  def increment_assertion_count
+    self.assertions += 1
+  end
+
+  def failure_class
+    Minitest::Assertion
+  end
+end
+
 require 'checklist'
 
-RSpec.configure do |config|
-  config.before(:each) do
-    Checklist.stub(:say)
+class Checklist
+  module Spec
+    class UI
+      attr_reader :record
+
+      def initialize
+        @record = []
+      end
+
+      def say(msg='')
+        @record << [:say, msg]
+      end
+
+      def header(checklist)
+        @record << [:header, checklist]
+      end
+
+      def start(step)
+        @record << [:start, step]
+      end
+
+      def finish(step)
+        @record << [:finish, step]
+      end
+
+      def complete(checklist)
+        @record << [:complete, checklist]
+      end
+
+      def incomplete(checklist, remaining_steps)
+        @record << [:incomplete, checklist, remaining_steps]
+      end
+    end
+
+    class Body
+      attr_reader :steps
+      def initialize
+        @steps = {}
+      end
+
+      def step(key)
+        @steps[key] ||= 0
+        @steps[key] += 1
+      end
+    end
   end
 end
 
@@ -21,23 +88,14 @@ EXAMPLE_STEPS = [
   [ 'three', 'three it is' ],
   [ 'four',  'here you are', 'A surprise description' ]]
 
-class RSpec::Mocks::Mock
-  def stub_checklist_ui
-    [
-      :say, :header, :start, :finish, :complete, :incomplete, :describe
-    ].each { |mm| self.stub(mm) }
-    self
-  end
-end
-
 def example_checklist
-  body = RSpec::Mocks::Mock.new('body')
-  body.stub(:step)
+  body = Checklist::Spec::Body.new
+  cl = Checklist.new('Test', ui: Checklist::Spec::UI.new)
 
-  cl = Checklist.new('Test',
-    :ui => RSpec::Mocks::Mock.new('UI').stub_checklist_ui)
+  class << cl
+    attr_accessor :body
+  end
 
-  class << cl ; attr_accessor :body ; end
   cl.body = body
 
   EXAMPLE_STEPS.each_with_index do |step, ii|

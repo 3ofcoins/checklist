@@ -1,9 +1,16 @@
-require "bundler/gem_tasks"
-require 'rspec/core/rake_task'
+require 'rubygems'
+require 'bundler/setup'
+require 'bundler/gem_tasks'
+require 'rake/testtask'
 
-desc "Run specs"
-RSpec::Core::RakeTask.new do |t|
-  t.pattern = "./spec/**/*_spec.rb" # don't need this, it's default.
+desc 'Run Minitest specs'
+Rake::TestTask.new :spec do |task|
+  task.libs << 'spec'
+  task.test_files = FileList['spec/**/*_spec.rb']
 end
 
-task :default => :spec
+task :rubocop do
+  sh 'rubocop'
+end
+
+task :default => [:rubocop, :spec]

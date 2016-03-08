@@ -1,25 +1,25 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 
 describe Checklist do
   let(:checklist) { Checklist.new('Test') }
 
   it "has a name" do
-    checklist.name.should eq 'Test'
+    expect { checklist.name == 'Test' }
   end
 
   it 'initially has an empty step list' do
-    checklist.steps.should eq []
-    checklist.length.should eq 0
+    expect { checklist.steps == [] }
+    expect { checklist.length == 0 }
   end
 
   it 'initially is not open' do
-    checklist.open?.should be false
-    checklist.remaining.should be nil
-    checklist.completed.should be nil
+    expect { !checklist.open? }
+    expect { checklist.remaining.nil? }
+    expect { checklist.completed.nil? }
   end
 
   it 'initially is not completed' do
-    checklist.completed?.should be nil
+    expect { checklist.completed?.nil? }
   end
 end
 
@@ -27,15 +27,16 @@ describe Checklist, '#<<' do
   let(:checklist) { Checklist.new('Test') }
 
   it 'adds new step to a checklist' do
-    checklist.steps.should eq []
+    checklist.steps == []
     step = Checklist.step('foo', 'bar') { nil }
     checklist << step
-    checklist.steps.length.should eq 1
-    checklist.steps.first.should eq step
+    expect { checklist.steps.length == 1 }
+    expect { checklist.steps.first == step }
   end
 
   it 'requires argument to be a step' do
-    lambda { checklist << 23 }.should raise_error MustBe::Note
+    raise MiniTest::Skip
+    expect {  rescuing { checklist << 23 }.is_a? MustBe::Note }
   end
 end
 
@@ -43,17 +44,17 @@ describe Checklist, '#step' do
   let(:checklist) { Checklist.new('Test') }
 
   it 'adds new step to a checklist' do
-    checklist.steps.should eq []
+    expect { checklist.steps == [] }
     checklist.step('foo', 'bar') { 23 }
-    checklist.steps.length.should eq 1
-    checklist.steps.first.challenge.should eq 'foo'
-    checklist.steps.first.response.should eq 'bar'
-    checklist.steps.first.description.should be nil
-    checklist.steps.first.code.call.should eq 23
+    expect { checklist.steps.length == 1 }
+    expect { checklist.steps.first.challenge == 'foo' }
+    expect { checklist.steps.first.response == 'bar' }
+    expect { checklist.steps.first.description.nil? }
+    expect { checklist.steps.first.code.call == 23 }
 
     checklist.step('one',   'one done')     { nil }
     checklist.step('two',   'check two')    { nil }
     checklist.step('three', 'three it is')  { nil }
-    checklist.length.should == 4
+    expect { checklist.length == 4 }
   end
 end

@@ -11,7 +11,7 @@ class Checklist
     ASCII_MARKS = {
       :tick => '[bold]+',
       :cross => '[bold]X' }
-    
+
     def initialize
       @fmtd = Formatador.new
       @marks = Locale.charset == 'UTF-8' ? UTF8_MARKS : ASCII_MARKS

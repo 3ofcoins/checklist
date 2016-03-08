@@ -1,33 +1,32 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 
 describe Checklist, '#open!' do
   subject { example_checklist }
 
   it 'opens the checklist' do
-    subject.open?.should be false
+    expect { !subject.open? }
     subject.open!
-    subject.open?.should be true
-    subject.completed.should == 0
-    subject.remaining.should == subject.length
+    expect { subject.open? }
+    expect { subject.completed == 0 }
+    expect { subject.remaining == subject.length }
   end
 
   it "reports the checklist header" do
-    subject.ui.should_receive(:header).with(subject)
     subject.open!
+    expect { subject.ui.record.include? [:header, subject] }
   end
 
   it 'cannot be called twice' do
     subject.open!
-    expect { subject.open! }.to raise_exception(RuntimeError)
+    expect { rescuing { subject.open! }.is_a?(RuntimeError) }
   end
 
-  it 'should prevent adding new steps' do
+  it 'prevents adding new steps' do
     subject.open!
-    expect { subject.step('one', 'one done') { nil } }.
-      to raise_exception(RuntimeError)
+    expect { rescuing { subject.step('one', 'one done') { nil } }.is_a?(RuntimeError) }
   end
 
   it 'returns checklist itself' do
-    subject.open!.should == subject
+    expect { subject.open! == subject }
   end
 end

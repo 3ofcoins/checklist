@@ -18,10 +18,11 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency "formatador"
   gem.add_dependency "locale"
-  gem.add_dependency "must_be"
 
-  gem.add_development_dependency 'bundler'
+  gem.add_development_dependency 'bundler', '~> 1.3'
+  gem.add_development_dependency 'minitest'
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'simplecov'
-  gem.add_development_dependency 'rspec'
+  gem.add_development_dependency 'wrong', '>= 0.7.1'
+  gem.add_development_dependency 'rubocop'
 end

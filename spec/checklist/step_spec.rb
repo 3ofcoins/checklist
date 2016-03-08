@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 
 describe Checklist, '#step!' do
   subject { example_checklist() }
@@ -6,58 +6,55 @@ describe Checklist, '#step!' do
   it 'should execute one next step and push it from remaining to completed' do
     subject.open!
 
-    subject.remaining.should == 4
-    subject.completed.should == 0
+    expect { subject.remaining == 4 }
+    expect { subject.completed == 0 }
+    expect { subject.body.steps == {} }
 
-    subject.body.should_receive(:step).with(0).once
     subject.step!
 
-    subject.remaining.should == 3
-    subject.completed.should == 1
+    expect { subject.remaining == 3 }
+    expect { subject.completed == 1 }
+    expect { subject.body.steps[0] == 1 }
 
-    subject.body.should_receive(:step).with(1).once
     subject.step!
 
-    subject.remaining.should == 2
-    subject.completed.should == 2
+    expect { subject.remaining == 2 }
+    expect { subject.completed == 2 }
+    expect { subject.body.steps[1] == 1 }
 
-    subject.body.should_receive(:step).with(2).once
     subject.step!
 
-    subject.remaining.should == 1
-    subject.completed.should == 3
+    expect { subject.remaining == 1 }
+    expect { subject.completed == 3 }
+    expect { subject.body.steps[2] == 1 }
 
-    subject.body.should_receive(:step).with(3).once
     subject.step!
 
-    subject.remaining.should == 0
-    subject.completed.should == 4
+    expect { subject.remaining == 0 }
+    expect { subject.completed == 4 }
+    expect { subject.body.steps[3] == 1 }
   end
 
   it 'should complete the checklist, eventually' do
     subject.open!
 
     subject.length.times do
-      subject.completed?.should be false
+      expect { !subject.completed? }
       subject.step!
     end
 
-    subject.completed?.should be true
+    expect { subject.completed? }
   end
 
   it 'should not be allowed when list is completed' do
     subject.open!
 
     subject.length.times { subject.step! }
-    expect { subject.step! }.to raise_exception(RuntimeError)
-  end
-
-  it 'should report task start and finish' do
-    
+    expect { rescuing { subject.step! }.is_a?(RuntimeError) }
   end
 
   it 'should be disallowed when list is not open' do
     # Look, Ma, no open!
-    expect { subject.step! }.to raise_exception(RuntimeError)
+    expect { rescuing { subject.step! }.is_a?(RuntimeError) }
   end
 end
