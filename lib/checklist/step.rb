@@ -14,6 +14,11 @@ class Checklist
       @id = id.to_sym
       @challenge = id.to_s
       instance_exec(self, &block)
+      reset!
+    end
+
+    def check(&block)
+      @check = block
     end
 
     def execute(&block)
@@ -21,13 +26,44 @@ class Checklist
     end
 
     def run!
-      instance_exec(&@execute)
+      # TODO: UI
+      unless check!
+        execute!
+        raise 'Recheck failed!' unless check!
+        @done = true
+      end
+    end
+
+    def done?
+      @done
     end
 
     def to_hash
       { 'Challenge' => challenge,
         'Response' => response,
         'Description' => description }
+    end
+
+    private
+
+    def reset!
+      @done = false
+      @executed = false
+    end
+
+    def execute!
+      @executed = false
+      instance_exec(&@execute)
+    ensure
+      @executed = true
+    end
+
+    def check!
+      if @check
+        instance_exec(&@check)
+      else
+        @executed
+      end
     end
   end
 

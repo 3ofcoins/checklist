@@ -46,16 +46,19 @@ describe Checklist, '#step' do
   it 'adds new step to a checklist' do
     expect { checklist.steps.empty? }
 
+    mark = false
     checklist.step(:foo) do
       response 'bar'
-      execute { 23 }
+      execute { mark = 23 }
     end
+    checklist.steps.first.run!
 
     expect { checklist.steps.length == 1 }
+    expect { checklist.steps.first.done? }
     expect { checklist.steps.first.challenge == 'foo' }
     expect { checklist.steps.first.response == 'bar' }
     expect { checklist.steps.first.description.nil? }
-    expect { checklist.steps.first.run! == 23 }
+    expect { mark == 23 }
 
     checklist.step('one')    { nil }
     checklist.step('two')    { nil }

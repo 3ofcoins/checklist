@@ -39,12 +39,12 @@ describe Checklist::Step do
 
   describe '#run!' do
     it 'runs the execute block' do
-      world = {}
+      world = Hash.new { |h, k| h[k] = 0 }
       step = Checklist::Step.new :foo do
-        execute { world[:foo] = true }
+        execute { world[:foo] += 1 }
       end
       step.run!
-      expect { world[:foo] }
+      expect { world == { foo: 1 } }
     end
 
     it 'does not catch exceptions raised by code' do
@@ -52,6 +52,29 @@ describe Checklist::Step do
         execute { raise 'Boo!' }
       end
       expect { rescuing { step.run! }.is_a?(RuntimeError) }
+    end
+
+    it 'runs the check block and skips execute if true' do
+      world = Hash.new { |h, k| h[k] = 0 }
+      step = Checklist::Step.new :foo do
+        check { world[:check] += 1 }
+        execute { world[:exec] += 1 }
+      end
+      step.run!
+      expect { world == { check: 1 } }
+    end
+
+    it 'reruns the check block after execute' do
+      world = Hash.new { |h, k| h[k] = 0 }
+      step = Checklist::Step.new :foo do
+        check do
+          world[:check] += 1
+          world[:exec] > 0
+        end
+        execute { world[:exec] += 1 }
+      end
+      step.run!
+      expect { world == { check: 2, exec: 1 } }
     end
   end
 end
