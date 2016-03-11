@@ -99,8 +99,15 @@ def example_checklist
   cl.body = body
 
   EXAMPLE_STEPS.each_with_index do |step, ii|
-    challenge, response, description = step
-    cl.step(challenge, response, description) { body.step(ii) }
+    a_challenge, a_response, a_description = step
+    cl.step a_challenge.to_sym do
+      challenge a_challenge
+      response a_response
+      description a_description
+      execute do
+        body.step(ii)
+      end
+    end
   end
 
   cl

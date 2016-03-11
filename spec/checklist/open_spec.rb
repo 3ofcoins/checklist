@@ -23,7 +23,7 @@ describe Checklist, '#open!' do
 
   it 'prevents adding new steps' do
     subject.open!
-    exc = rescuing { subject.step('one', 'one done') { nil } }
+    exc = rescuing { subject.step('one') { nil } }
     expect { exc.is_a?(RuntimeError) }
   end
 

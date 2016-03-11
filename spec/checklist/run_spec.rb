@@ -17,10 +17,16 @@ describe Checklist, '#run!' do
   end
 
   it 'should raise and report incomplete steps if a step bombs' do
-    subject.step('five', 'bomb') do
-      raise Exception, 'as planned'
+    subject.step('five') do
+      execute do
+        raise Exception, 'as planned'
+      end
     end
-    subject.step('six', 'done', 'a description') { body.step(6) }
+    subject.step('six') do
+      execute do
+        body.step(6)
+      end
+    end
 
     expect { rescuing { subject.run! }.is_a?(Exception) }
     expect { subject.body.steps == { 0 => 1, 1 => 1, 2 => 1, 3 => 1 } }

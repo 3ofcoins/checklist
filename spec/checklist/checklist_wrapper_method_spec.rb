@@ -12,9 +12,9 @@ describe Checklist, '.checklist' do
   it 'runs a checklist defined within the block' do
     record = []
     Checklist.checklist 'A sample checklist', ui: ui do |cl|
-      cl.step('first', 'done') { record << 1 }
-      cl.step('second', 'ok')  { record << 2 }
-      cl.step('third', 'fine') { record << 3 }
+      cl.step('first')  { execute { record << 1 } }
+      cl.step('second') { execute { record << 2 } }
+      cl.step('third')  { execute { record << 3 } }
     end
     expect { record == [1, 2, 3] }
   end

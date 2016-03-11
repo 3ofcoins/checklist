@@ -28,7 +28,7 @@ describe Checklist, '#<<' do
 
   it 'adds new step to a checklist' do
     expect { checklist.steps.empty? }
-    step = Checklist.step('foo', 'bar') { nil }
+    step = Checklist::Step.new(:foo) { nil }
     checklist << step
     expect { checklist.steps.length == 1 }
     expect { checklist.steps.first == step }
@@ -45,16 +45,21 @@ describe Checklist, '#step' do
 
   it 'adds new step to a checklist' do
     expect { checklist.steps.empty? }
-    checklist.step('foo', 'bar') { 23 }
+
+    checklist.step(:foo) do
+      response 'bar'
+      execute { 23 }
+    end
+
     expect { checklist.steps.length == 1 }
     expect { checklist.steps.first.challenge == 'foo' }
     expect { checklist.steps.first.response == 'bar' }
     expect { checklist.steps.first.description.nil? }
-    expect { checklist.steps.first.code.call == 23 }
+    expect { checklist.steps.first.run! == 23 }
 
-    checklist.step('one',   'one done')     { nil }
-    checklist.step('two',   'check two')    { nil }
-    checklist.step('three', 'three it is')  { nil }
+    checklist.step('one')    { nil }
+    checklist.step('two')    { nil }
+    checklist.step('three')  { nil }
     expect { checklist.length == 4 }
   end
 end

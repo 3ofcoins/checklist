@@ -23,8 +23,8 @@ class Checklist
   end
 
   # create new Checklist::Step and add it to the checklist
-  def step(challenge, response, description = nil, &code)
-    self << Checklist.step(challenge, response, description, &code)
+  def step(id, &code)
+    self << Step.new(id, &code)
   end
 
   # true if checklist is started
