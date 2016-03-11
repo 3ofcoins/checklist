@@ -38,31 +38,18 @@ describe Checklist::Step do
   end
 
   describe '#run!' do
-    let(:code_body) do
-      code_body = MiniTest::Mock.new
-      code_body.expect :poke!, nil
-      code_body
-    end
-
-    let(:step) do
-      body_var = code_body
-      Checklist::Step.new :foo do
-        challenge 'the challenge'
-        response 'the response'
-        description 'the description'
-        execute { body_var.poke! }
+    it 'runs the execute block' do
+      world = {}
+      step = Checklist::Step.new :foo do
+        execute { world[:foo] = true }
       end
-    end
-
-    it 'runs the proc from code field' do
       step.run!
+      expect { world[:foo] }
     end
 
     it 'does not catch exceptions raised by code' do
-      body_var = code_body
-      step.execute do
-        body_var.poke!
-        raise RuntimeError
+      step = Checklist::Step.new :foo do
+        execute { raise 'Boo!' }
       end
       expect { rescuing { step.run! }.is_a?(RuntimeError) }
     end
