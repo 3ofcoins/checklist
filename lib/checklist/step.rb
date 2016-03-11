@@ -8,6 +8,8 @@ class Checklist
     dwim_accessor :challenge
     dwim_accessor :response
     dwim_accessor :description
+    dwim_accessor :execute
+    dwim_accessor :check
 
     def initialize(id, &block)
       raise ArgumentError, 'need a block' unless block_given?
@@ -15,14 +17,6 @@ class Checklist
       @challenge = id.to_s
       instance_exec(self, &block)
       reset!
-    end
-
-    def check(&block)
-      @check = block
-    end
-
-    def execute(&block)
-      @execute = block
     end
 
     def run!
