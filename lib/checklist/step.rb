@@ -17,22 +17,21 @@ module Checklist
       @done = false
     end
 
-    def check(&block)
+    def check(question=nil, &block)
       ensure_not_configured
-      raise ArgumentError, 'need a block' unless block_given?
-      @check = block
+      unless !question.nil? ^ block_given?
+        raise ArgumentError, 'need either a question or a block'
+      end
+      @check = block || question
     end
 
     def expect(*values, &block)
       ensure_not_configured
-      if !(block_given? ^ !values.empty?)
+      unless block_given? ^ !values.empty?
         raise ArgumentError,
               'Need a list of values or a validator block, but not both'
-      elsif block_given?
-        @expect = block
-      else
-        @expect = values
       end
+      @expect = block || values
     end
 
     def converge(description=nil, &block)
@@ -50,7 +49,7 @@ module Checklist
       return if done?
       @after_converge = false
       unless check!(ctx)
-        converge!(ctx)
+        ctx.instance_exec(&@converge) # TODO: converge as string
         @after_converge = true
         raise "Failed to converge" unless check!(ctx)
       end
@@ -69,7 +68,11 @@ module Checklist
 
     def check!(ctx = nil)
       if @check
-        status = ctx.instance_exec(&@check)
+        status = if @check.is_a?(Proc)
+                   ctx.instance_exec(&@check)
+                 else
+                   ui.agree(@check)
+                 end
         case @expect
         when nil
           status
@@ -82,14 +85,6 @@ module Checklist
         end
       else
         status = @after_converge
-      end
-    end
-
-    def converge!(ctx = nil)
-      if @converge
-        ctx.instance_exec(&@converge) # TODO: converge as string
-      else
-        raise "FAIL" unless ui.yes_or_no("#{name}?")
       end
     end
   end

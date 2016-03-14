@@ -35,9 +35,11 @@ module Checklist
       end
 
       describe '#check' do
-        it 'requires a block' do
+        it 'requires either a block or a question' do
           expect { rescuing { step { check } }.is_a?(ArgumentError) }
-          expect { rescuing { step { check { bar } } }.nil? }
+          expect { rescuing { step { check { nil } } }.nil? }
+          expect { rescuing { step { check 'bar?' } }.nil? }
+          expect { rescuing { step { check('foo?') { nil } } }.is_a?(ArgumentError) }
         end
 
         it 'cannot be run after #initialize' do
@@ -75,8 +77,8 @@ module Checklist
     end
 
     describe '#check!' do
-      def step(&block)
-        Step.new '.' do
+      def step(ui=nil, &block)
+        Step.new '.', ui: ui do
           converge {}
           instance_exec(&block) if block_given?
         end
@@ -87,6 +89,15 @@ module Checklist
         expect { !st.check! }
         st.instance_exec { @after_converge = true }
         expect { st.check! }
+      end
+
+      it 'asks a yes/no question via UI if given as a string' do
+        ui = Minitest::Mock.new
+        ui.expect(:agree, true, ['Is this thing on?'])
+
+        st = step(ui) { check 'Is this thing on?' }
+        expect { st.check! }
+        ui.verify
       end
 
       it 'is taken at face value when no expectation is configured' do
