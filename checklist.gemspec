@@ -16,8 +16,10 @@ Gem::Specification.new do |gem|
   gem.require_paths = ['lib']
   gem.version       = Checklist::VERSION
 
-  gem.add_dependency 'formatador'
+  gem.add_dependency 'formatador' # FIXME: stop using it
+  gem.add_dependency 'highline'
   gem.add_dependency 'locale'
+  gem.add_dependency 'rainbow'
 
   gem.add_development_dependency 'bundler', '~> 1.3'
   gem.add_development_dependency 'minitest'
