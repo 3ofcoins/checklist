@@ -37,7 +37,7 @@ module Checklist
       fmtd.display "[green]All #{checklist.length} steps [bold]completed[/]\n"
     end
 
-    def incomplete(checklist, remaining_steps) # rubocop:disable Metrics/AbcSize
+    def incomplete(checklist, remaining_steps)
       fmtd.redisplay "  [[red]#{marks[:cross]}[/]] #{remaining_steps.first.challenge} [red]FAILED[/]\n" # rubocop:disable Metrics/LineLength
       remaining_steps[1..remaining_steps.length].each do |step|
         fmtd.display "  [ ] #{step.challenge} [yellow]PENDING[/]\n"

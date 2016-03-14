@@ -1,5 +1,6 @@
 require 'checklist/checklist'
 require 'checklist/global'
+require 'checklist/locals'
 require 'checklist/step'
 require 'checklist/ui'
 require 'checklist/version'

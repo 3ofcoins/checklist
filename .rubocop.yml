@@ -10,3 +10,6 @@ Documentation:
 
 Metrics/MethodLength:
   Max: 23
+
+Metrics/AbcSize:
+  Max: 23

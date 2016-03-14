@@ -61,7 +61,7 @@ module Checklist
     end
 
     # Execute one step of the checklist
-    def step! # rubocop:disable Metrics/AbcSize
+    def step!
       raise 'Checklist is not open' unless open?
       raise 'Checklist is completed' if completed?
       self.current = remaining_steps.first
