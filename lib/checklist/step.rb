@@ -7,6 +7,7 @@ module Checklist
     def initialize(name, opts={}, &block)
       @name = name
       @ui = opts.fetch(:ui) { UI.new(opts) }
+      @keep_on_trying = opts[:keep_on_trying]
       instance_exec(self, &block) if block_given?
       @configured = true
       raise "No converge provided" unless @converge
@@ -48,10 +49,10 @@ module Checklist
     def run!(ctx = nil)
       return if done?
       @after_converge = false
-      unless check!(ctx)
+      until check!(ctx)
+        raise "Cannot converge" unless recheck?
         ctx.instance_exec(&@converge) # TODO: converge as string
         @after_converge = true
-        raise "Failed to converge" unless check!(ctx)
       end
       @done = true
     end
@@ -64,6 +65,10 @@ module Checklist
 
     def ensure_not_configured
       raise "Step already configured!" if @configured
+    end
+
+    def recheck?
+      @keep_on_trying || !@after_converge
     end
 
     def check!(ctx = nil)

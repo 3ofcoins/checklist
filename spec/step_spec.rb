@@ -241,6 +241,18 @@ module Checklist
         expect { !st.done? }
         expect { ctx == {checked: 2, converged: 1} }
       end
+
+      it 'rechecks until it succeeds if :keep_on_trying provided' do
+        st = Step.new '.', keep_on_trying: true do
+          check { self[:checked] += 1 }
+          converge { self[:converged] += 1 }
+          expect { |v| v > 10 }
+        end
+        expect { !st.done? }
+        st.run!(ctx)
+        expect { st.done? }
+        expect { ctx == {checked: 11, converged: 10} }
+      end
     end
   end
 end
