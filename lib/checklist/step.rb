@@ -4,13 +4,13 @@ module Checklist
   class Step
     attr_reader :name, :ui
 
-    def initialize(name, opts={}, &block)
+    def initialize(name, opts = {}, &block)
       @name = name
       @ui = opts.fetch(:ui) { UI.new(opts) }
       @keep_on_trying = opts[:keep_on_trying]
       instance_exec(self, &block) if block_given?
       @configured = true
-      raise "No converge provided" unless @converge
+      raise 'No converge provided' unless @converge
       reset!
     end
 
@@ -18,7 +18,7 @@ module Checklist
       @done = false
     end
 
-    def check(question=nil, &block)
+    def check(question = nil, &block)
       ensure_not_configured
       unless !question.nil? ^ block_given?
         raise ArgumentError, 'need either a question or a block'
@@ -35,22 +35,17 @@ module Checklist
       @expect = block || values
     end
 
-    def converge(description=nil, &block)
+    def converge(&block)
       ensure_not_configured
       raise ArgumentError, 'need a block' unless block_given?
       @converge = block
-    end
-
-    def tag(*args)
-      ensure_not_configured
-      raise NotImplementedError
     end
 
     def run!(ctx = nil)
       return if done?
       @after_converge = false
       until check!(ctx)
-        raise "Cannot converge" unless recheck?
+        raise 'Cannot converge' unless recheck?
         ctx.instance_exec(&@converge) # TODO: converge as string
         @after_converge = true
       end
@@ -64,7 +59,7 @@ module Checklist
     private
 
     def ensure_not_configured
-      raise "Step already configured!" if @configured
+      raise 'Step already configured!' if @configured
     end
 
     def recheck?
@@ -89,7 +84,7 @@ module Checklist
           raise "CAN'T HAPPEN"
         end
       else
-        status = @after_converge
+        @after_converge
       end
     end
   end

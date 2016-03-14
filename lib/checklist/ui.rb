@@ -4,7 +4,7 @@ module Checklist
   class UI
     attr_reader :highline
 
-    def initialize(opts={})
+    def initialize(opts = {})
       opts[:in] ||= $stdin
       opts[:out] ||= $stdout
       @highline = HighLine.new(opts[:in], opts[:out])

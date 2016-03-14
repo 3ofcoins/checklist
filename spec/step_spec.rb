@@ -1,6 +1,6 @@
 require_relative './spec_helper'
 
-module Checklist
+module Checklist # rubocop:disable Metrics/ModuleLength
   class Step
     public :check!
   end
@@ -25,10 +25,9 @@ module Checklist
       end
     end
 
-
     describe 'definition API' do
       def step(&block)
-        Step.new(".") do
+        Step.new('.') do
           converge {}
           instance_exec(&block) if block_given?
         end
@@ -37,9 +36,9 @@ module Checklist
       describe '#check' do
         it 'requires either a block or a question' do
           expect { rescuing { step { check } }.is_a?(ArgumentError) }
-          expect { rescuing { step { check { nil } } }.nil? }
+          expect { rescuing { step { check {} } }.nil? }
           expect { rescuing { step { check 'bar?' } }.nil? }
-          expect { rescuing { step { check('foo?') { nil } } }.is_a?(ArgumentError) }
+          expect { rescuing { step { check('foo?') {} } }.is_a?(ArgumentError) }
         end
 
         it 'cannot be run after #initialize' do
@@ -51,10 +50,10 @@ module Checklist
       describe '#expect' do
         it 'takes either some values or a block' do
           expect { rescuing { step { expect } }.is_a?(ArgumentError) }
-          expect { rescuing { step { expect("foo") } }.nil? }
-          expect { rescuing { step { expect("foo", "bar") } }.nil? }
-          expect { rescuing { step { expect { bar } } }.nil? }
-          expect { rescuing { step { expect("foo") { bar } } }.is_a?(ArgumentError) }
+          expect { rescuing { step { expect('foo') } }.nil? }
+          expect { rescuing { step { expect('foo', 'bar') } }.nil? }
+          expect { rescuing { step { expect {} } }.nil? }
+          expect { rescuing { step { expect('foo') {} } }.is_a?(ArgumentError) }
         end
 
         it 'cannot be run after #initialize' do
@@ -77,7 +76,7 @@ module Checklist
     end
 
     describe '#check!' do
-      def step(ui=nil, &block)
+      def step(ui = nil, &block)
         Step.new '.', ui: ui do
           converge {}
           instance_exec(&block) if block_given?
@@ -180,11 +179,11 @@ module Checklist
         val = 23
         ctx = {}
         expect { st.check!(ctx) }
-        expect { ctx == {3 => 23} }
+        expect { ctx == { 3 => 23 } }
 
         val = 17
         expect { st.check!(ctx) }
-        expect { ctx == {3 => 17} }
+        expect { ctx == { 3 => 17 } }
 
         ctx = []
         expect { st.check!(ctx) }
@@ -204,7 +203,7 @@ module Checklist
         expect { !st.done? }
         st.run!(ctx)
         expect { st.done? }
-        expect { ctx == {converged: 1} }
+        expect { ctx == { converged: 1 } }
       end
 
       it 'does not converge if check is true' do
@@ -215,7 +214,7 @@ module Checklist
         expect { !st.done? }
         st.run!(ctx)
         expect { st.done? }
-        expect { ctx == {checked: 1} }
+        expect { ctx == { checked: 1 } }
       end
 
       it 'rechecks after converge' do
@@ -227,7 +226,7 @@ module Checklist
         expect { !st.done? }
         st.run!(ctx)
         expect { st.done? }
-        expect { ctx == {checked: 2, converged: 1} }
+        expect { ctx == { checked: 2, converged: 1 } }
       end
 
       it 'raises an exception if recheck fails' do
@@ -239,7 +238,7 @@ module Checklist
         expect { !st.done? }
         expect { rescuing { st.run!(ctx) }.is_a?(RuntimeError) }
         expect { !st.done? }
-        expect { ctx == {checked: 2, converged: 1} }
+        expect { ctx == { checked: 2, converged: 1 } }
       end
 
       it 'rechecks until it succeeds if :keep_on_trying provided' do
@@ -251,7 +250,7 @@ module Checklist
         expect { !st.done? }
         st.run!(ctx)
         expect { st.done? }
-        expect { ctx == {checked: 11, converged: 10} }
+        expect { ctx == { checked: 11, converged: 10 } }
       end
     end
   end
