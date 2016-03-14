@@ -12,4 +12,4 @@ Metrics/MethodLength:
   Max: 23
 
 Metrics/AbcSize:
-  Max: 23
+  Enabled: false

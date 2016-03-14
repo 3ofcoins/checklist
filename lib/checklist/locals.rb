@@ -53,6 +53,11 @@ module Checklist
       @sandbox ||= new_sandbox
     end
 
+    def freeze
+      @namespace.freeze
+      super
+    end
+
     private
 
     def memoized_cache

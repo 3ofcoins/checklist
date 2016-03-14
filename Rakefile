@@ -14,3 +14,18 @@ task :rubocop do
 end
 
 task default: [:rubocop, :spec]
+
+task :selftest do
+  require 'checklist'
+  cl = Checklist::Checklist.new 'Self Test' do
+    step 'Rubocop' do
+      converge { Rake::Task[:rubocop].invoke }
+    end
+
+    step 'Spec' do
+      converge { Rake::Task[:spec].invoke }
+    end
+  end
+
+  cl.run!
+end
