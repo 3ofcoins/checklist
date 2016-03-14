@@ -1,7 +1,7 @@
 require_relative '../spec_helper'
 
 describe Checklist do
-  let(:checklist) { Checklist.new('Test') }
+  let(:checklist) { Checklist::Checklist.new('Test') }
 
   it 'has a name' do
     expect { checklist.name == 'Test' }
@@ -24,7 +24,7 @@ describe Checklist do
 end
 
 describe Checklist, '#<<' do
-  let(:checklist) { Checklist.new('Test') }
+  let(:checklist) { Checklist::Checklist.new('Test') }
 
   it 'adds new step to a checklist' do
     expect { checklist.steps.empty? }
@@ -41,7 +41,7 @@ describe Checklist, '#<<' do
 end
 
 describe Checklist, '#step' do
-  let(:checklist) { Checklist.new('Test') }
+  let(:checklist) { Checklist::Checklist.new('Test') }
 
   it 'adds new step to a checklist' do
     expect { checklist.steps.empty? }
@@ -49,7 +49,7 @@ describe Checklist, '#step' do
     mark = false
     checklist.step(:foo) do
       response 'bar'
-      execute { mark = 23 }
+      converge { mark = 23 }
     end
     checklist.steps.first.run!
 

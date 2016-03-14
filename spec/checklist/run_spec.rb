@@ -5,7 +5,7 @@ require_relative '../spec_helper'
 describe Checklist, '#run!' do
   subject { example_checklist }
 
-  it 'should execute all the steps' do
+  it 'should converge all the steps' do
     subject.run!
 
     expect { subject.body.steps == { 0 => 1, 1 => 1, 2 => 1, 3 => 1 } }
@@ -18,12 +18,12 @@ describe Checklist, '#run!' do
 
   it 'should raise and report incomplete steps if a step bombs' do
     subject.step('five') do
-      execute do
+      converge do
         raise Exception, 'as planned'
       end
     end
     subject.step('six') do
-      execute do
+      converge do
         body.step(6)
       end
     end

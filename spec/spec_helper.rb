@@ -34,7 +34,7 @@ end
 
 require 'checklist'
 
-class Checklist
+module Checklist
   module Spec
     class UI
       attr_reader :record
@@ -90,7 +90,7 @@ EXAMPLE_STEPS = [
 
 def example_checklist
   body = Checklist::Spec::Body.new
-  cl = Checklist.new('Test', ui: Checklist::Spec::UI.new)
+  cl = Checklist::Checklist.new('Test', ui: Checklist::Spec::UI.new)
 
   class << cl
     attr_accessor :body
@@ -104,7 +104,7 @@ def example_checklist
       challenge a_challenge
       response a_response
       description a_description
-      execute do
+      converge do
         body.step(ii)
       end
     end

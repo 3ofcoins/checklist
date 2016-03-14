@@ -2,7 +2,7 @@
 require 'formatador'
 require 'locale'
 
-class Checklist
+module Checklist
   class UI
     UTF8_MARKS = {
       tick: '✓',

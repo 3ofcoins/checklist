@@ -1,4 +1,4 @@
-class Checklist
+module Checklist
   module Sugar
     def dwim_accessor(name, &block)
       send(:define_method, name, dwim_accessor_proc(name, &block))

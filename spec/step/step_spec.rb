@@ -18,7 +18,7 @@ describe Checklist::Step do
     it 'Creates a runnable Checklist::Step instance' do
       called = false
       step = Checklist::Step.new :name do
-        execute do
+        converge do
           called = true
         end
       end
@@ -38,10 +38,10 @@ describe Checklist::Step do
   end
 
   describe '#run!' do
-    it 'runs the execute block' do
+    it 'runs the converge block' do
       world = Hash.new { |h, k| h[k] = 0 }
       step = Checklist::Step.new :foo do
-        execute { world[:foo] += 1 }
+        converge { world[:foo] += 1 }
       end
       step.run!
       expect { world == { foo: 1 } }
@@ -49,29 +49,29 @@ describe Checklist::Step do
 
     it 'does not catch exceptions raised by code' do
       step = Checklist::Step.new :foo do
-        execute { raise 'Boo!' }
+        converge { raise 'Boo!' }
       end
       expect { rescuing { step.run! }.is_a?(RuntimeError) }
     end
 
-    it 'runs the check block and skips execute if true' do
+    it 'runs the check block and skips converge if true' do
       world = Hash.new { |h, k| h[k] = 0 }
       step = Checklist::Step.new :foo do
         check { world[:check] += 1 }
-        execute { world[:exec] += 1 }
+        converge { world[:exec] += 1 }
       end
       step.run!
       expect { world == { check: 1 } }
     end
 
-    it 'reruns the check block after execute' do
+    it 'reruns the check block after converge' do
       world = Hash.new { |h, k| h[k] = 0 }
       step = Checklist::Step.new :foo do
         check do
           world[:check] += 1
           world[:exec] > 0
         end
-        execute { world[:exec] += 1 }
+        converge { world[:exec] += 1 }
       end
       step.run!
       expect { world == { check: 2, exec: 1 } }

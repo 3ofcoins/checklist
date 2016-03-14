@@ -1,6 +1,6 @@
 require_relative 'sugar'
 
-class Checklist
+module Checklist
   class Step
     extend Sugar
 
@@ -8,7 +8,7 @@ class Checklist
     dwim_accessor :challenge
     dwim_accessor :response
     dwim_accessor :description
-    dwim_accessor :execute
+    dwim_accessor :converge
     dwim_accessor :check
 
     def initialize(id, &block)
@@ -22,7 +22,7 @@ class Checklist
     def run!
       # TODO: UI
       unless check!
-        execute!
+        converge!
         raise 'Recheck failed!' unless check!
         @done = true
       end
@@ -42,21 +42,21 @@ class Checklist
 
     def reset!
       @done = false
-      @executed = false
+      @converged = false
     end
 
-    def execute!
-      @executed = false
-      instance_exec(&@execute)
+    def converge!
+      @converged = false
+      instance_exec(&@converge)
     ensure
-      @executed = true
+      @converged = true
     end
 
     def check!
       if @check
         instance_exec(&@check)
       else
-        @executed
+        @converged
       end
     end
   end
