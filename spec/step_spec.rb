@@ -1,33 +1,38 @@
 require_relative './spec_helper'
 
+require 'stringio'
+
 module Checklist # rubocop:disable Metrics/ModuleLength
   class Step
     public :check!
   end
 
   describe Step do
+    let(:output) { StringIO.new }
+    let(:ui) { UI.new(out: output) }
+
     describe '#initialize' do
       it 'takes a name and a block' do
-        step = Step.new('A Name') { converge {} }
+        step = Step.new('A Name', ui: ui) { converge {} }
         expect { step.name == 'A Name' }
-        expect { rescuing { Step.new('.') }.is_a?(Exception) }
+        expect { rescuing { Step.new('.', ui: ui) }.is_a?(Exception) }
       end
 
       it 'takes a block that initializes the step' do
-        step = Step.new 'A Name' do
+        step = Step.new 'A Name', ui: ui do
           check { true }
           expect 4, 8, 15, 16, 23, 42
           converge {}
         end
 
         expect { step.name == 'A Name' }
-        expect { rescuing { Step.new('.') { bar } }.is_a?(NameError) }
+        expect { rescuing { Step.new('.', ui: ui) { bar } }.is_a?(NameError) }
       end
     end
 
     describe 'definition API' do
       def step(&block)
-        Step.new('.') do
+        Step.new('.', ui: ui) do
           converge {}
           instance_exec(&block) if block_given?
         end
@@ -76,8 +81,8 @@ module Checklist # rubocop:disable Metrics/ModuleLength
     end
 
     describe '#check!' do
-      def step(ui = nil, &block)
-        Step.new '.', ui: ui do
+      def step(ui_ = ui, &block)
+        Step.new '.', ui: ui_ do
           converge {}
           instance_exec(&block) if block_given?
         end
@@ -93,6 +98,7 @@ module Checklist # rubocop:disable Metrics/ModuleLength
       it 'asks a yes/no question via UI if given as a string' do
         ui = Minitest::Mock.new
         ui.expect(:agree, true, ['Is this thing on?'])
+        # ui.expect(:say, nil)
 
         st = step(ui) { check 'Is this thing on?' }
         expect { st.check! }
@@ -197,7 +203,7 @@ module Checklist # rubocop:disable Metrics/ModuleLength
     describe '#run!' do
       let(:ctx) { Hash.new { |h, k| h[k] = 0 } }
       it 'runs converge block once in context if no check' do
-        st = Step.new '.' do
+        st = Step.new '.', ui: ui do
           converge { self[:converged] += 1 }
         end
         expect { !st.done? }
@@ -207,7 +213,7 @@ module Checklist # rubocop:disable Metrics/ModuleLength
       end
 
       it 'does not converge if check is true' do
-        st = Step.new '.' do
+        st = Step.new '.', ui: ui do
           check { self[:checked] += 1 }
           converge { self[:converged] += 1 }
         end
@@ -218,7 +224,7 @@ module Checklist # rubocop:disable Metrics/ModuleLength
       end
 
       it 'rechecks after converge' do
-        st = Step.new '.' do
+        st = Step.new '.', ui: ui do
           check { self[:checked] += 1 }
           converge { self[:converged] += 1 }
           expect 2
@@ -230,7 +236,7 @@ module Checklist # rubocop:disable Metrics/ModuleLength
       end
 
       it 'raises an exception if recheck fails' do
-        st = Step.new '.' do
+        st = Step.new '.', ui: ui do
           check { self[:checked] += 1 }
           converge { self[:converged] += 1 }
           expect 5
@@ -242,7 +248,7 @@ module Checklist # rubocop:disable Metrics/ModuleLength
       end
 
       it 'rechecks until it succeeds if :keep_on_trying provided' do
-        st = Step.new '.', keep_on_trying: true do
+        st = Step.new '.', ui: ui, keep_on_trying: true do
           check { self[:checked] += 1 }
           converge { self[:converged] += 1 }
           expect { |v| v > 10 }

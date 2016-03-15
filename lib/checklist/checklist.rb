@@ -29,24 +29,35 @@ module Checklist
     end
 
     def step(name, opts = {}, &block)
-      steps << Step.new(name, opts, &block)
+      steps << Step.new(
+        name,
+        opts.merge(ui: ui, number: steps.length + 1),
+        &block)
     end
 
     def run!
       ctx = Context.new(locals)
-      ui.show_checklist_header(self)
-      steps.each_with_index do |st, i|
-        ui.show_step(i + 1, st)
+      report_header
+      steps.each do |st|
+        ui.say
         st.run!(ctx)
       end
     rescue => e
-      ui.say "** FATAL: #{e}"
-      ui.say 'Remaining steps:'
-      steps.each_with_index do |st, i|
-        next if st.done?
-        ui.show_step(i + 1, st)
-      end
+      ui.say Rainbow("\nFATAL:").bright.red,
+             Rainbow(e.to_s).underline
+      ui.say Rainbow('REMAINING STEPS:').yellow
+      steps.reject(&:done?).each(&:report)
       raise
+    end
+
+    def report_header
+      ui.say Rainbow('CHECKLIST:').bright.yellow,
+             Rainbow(name).underline
+    end
+
+    def report
+      report_header
+      steps.each(&:report)
     end
   end
 end

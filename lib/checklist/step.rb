@@ -2,12 +2,12 @@ require_relative './ui'
 
 module Checklist
   class Step
-    attr_reader :name, :ui
+    attr_reader :name, :ui, :opts, :status
 
     def initialize(name, opts = {}, &block)
       @name = name
       @ui = opts.fetch(:ui) { UI.new(opts) }
-      @keep_on_trying = opts[:keep_on_trying]
+      @opts = opts
       instance_exec(self, &block) if block_given?
       @configured = true
       raise 'No converge provided' unless @converge
@@ -15,7 +15,7 @@ module Checklist
     end
 
     def reset!
-      @done = false
+      @status = nil
     end
 
     def check(question = nil, &block)
@@ -42,50 +42,120 @@ module Checklist
     end
 
     def run!(ctx = nil)
-      return if done?
-      @after_converge = false
+      report
+      return unless status.nil?
+      @status = :started
       until check!(ctx)
         raise 'Cannot converge' unless recheck?
-        ctx.instance_exec(&@converge) # TODO: converge as string
-        @after_converge = true
+        converge!(ctx)
       end
-      @done = true
+      @status = :done
+    rescue => e
+      @status = :error
+      @value = e
+      raise
+    ensure
+      report
     end
 
     def done?
-      @done
+      status == :done
+    end
+
+    def report
+      ui.say opts[:number] && Rainbow("##{opts[:number]}.").white.bright,
+             Rainbow(name).underline,
+             status_for_report
     end
 
     private
+
+    STATUS_COLORS = {
+      started: :yellow,
+      pass: :green,
+      done: :green,
+      fail: :red,
+      error: :red }.freeze
+
+    STATUS_MARKS = {
+      nil => '…',
+      started: '…',
+      done: '✓',
+      pass: '✓',
+      fail: '✗',
+      error: '💣' }.freeze
+
+    def status_s
+      if ui.utf8?
+        STATUS_MARKS.fetch(status) { status.to_s.upcase }
+      else
+        status.to_s.upcase
+      end
+    end
+
+    def status_for_report
+      col = STATUS_COLORS.fetch(@status, :white)
+      pieces = [
+        Rainbow('[').color(col),
+        Rainbow(status_s).color(col).bright]
+      unless [nil, true, false].include?(@value)
+        pieces << Rainbow(':').color(col)
+        pieces << Rainbow(@value.to_s).color(col).underline
+      end
+      pieces << Rainbow(']').color(col)
+      pieces.join
+    end
+
+    def report_action(message)
+      ui.say(Rainbow('▶').white.bright, message, '…')
+    end
 
     def ensure_not_configured
       raise 'Step already configured!' if @configured
     end
 
     def recheck?
-      @keep_on_trying || !@after_converge
+      opts[:keep_on_trying] || !@after_converge
     end
 
     def check!(ctx = nil)
-      if @check
-        status = if @check.is_a?(Proc)
-                   ctx.instance_exec(&@check)
-                 else
-                   ui.agree(@check)
-                 end
-        case @expect
-        when nil
-          status
-        when Array
-          @expect.include?(status)
-        when Proc
-          ctx.instance_exec(status, &@expect)
-        else
-          raise "CAN'T HAPPEN"
-        end
-      else
-        @after_converge
+      check_execute(ctx)
+      check_interpret(ctx).tap do |passed|
+        @status = passed ? :pass : :fail
+        report if @check.is_a?(Proc)
       end
+    end
+
+    def check_execute(ctx)
+      @value =
+        case @check
+        when nil
+          @after_converge
+        when Proc
+          report_action 'Checking'
+          ctx.instance_exec(&@check)
+        else
+          ui.agree(@check)
+        end
+    end
+
+    def check_interpret(ctx)
+      case @expect
+      when nil
+        !!@value # rubocop:disable Style/DoubleNegation
+      when Array
+        @expect.include?(@value)
+      when Proc
+        ctx.instance_exec(@value, &@expect)
+      else
+        raise "CAN'T HAPPEN"
+      end
+    end
+
+    def converge!(ctx)
+      report_action 'Converging'
+      ctx.instance_exec(&@converge) # TODO: converge as string
+      @after_converge = true
     end
   end
 end
