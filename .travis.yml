@@ -1,8 +1,9 @@
 ---
 language: ruby
+before_install: gem update bundler
 bundler_args: --without convenience
 rvm:
  - 2.1
  - 2.2
- - 2.3
- - 2.3-clang
+ - 2.3.0
+ - 2.3.0-clang
