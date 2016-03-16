@@ -1,5 +1,6 @@
 ---
 language: ruby
+bundler_args: --without convenience
 rvm:
  - 2.1
  - 2.2

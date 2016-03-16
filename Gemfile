@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 gemspec
 
-group 'development' do
+group 'convenience' do
   gem 'pry'
 end
