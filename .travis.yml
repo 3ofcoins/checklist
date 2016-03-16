@@ -1,17 +1,7 @@
 ---
 language: ruby
 rvm:
-- 1.8.7
-- 1.9.2
-- 1.9.3
-- jruby-18mode
-- jruby-19mode
-- rbx-18mode
-- rbx-19mode
-notifications:
-  hipchat:
-    secure: ! 'VkJG9uSc6bnK73byAgZ5Dp639sTiuU27YKSQPSBOjHAv6FY3uZjfP99qhzt5
-
-      V1dO5BxgKHU0GEg0ddSY036cjYouG0VSl/SvX0j4QzvaP3qmRFAoYlW2ycls
-
-      tYADlDDJdOF3hUhjoXC/D6KAyTkBFNSSVLqLPoAJaQXguxQk1Lo='
+ - 2.1
+ - 2.2
+ - 2.3
+ - 2.3-clang
