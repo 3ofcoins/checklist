@@ -1,6 +1,10 @@
 require_relative './ui'
 
 module Checklist
+  def self.Step(name, &block)
+    Step.define_template(name, &block)
+  end
+
   class Step
     class << self
       def define_template(name, &block)

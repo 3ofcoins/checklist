@@ -5,6 +5,10 @@ require_relative './step'
 require_relative './ui'
 
 module Checklist
+  def self.checklist(*args, &block)
+    Checklist.new(*args, &block)
+  end
+
   class Checklist
     class Context
       def initialize(locals = nil)
@@ -28,11 +32,16 @@ module Checklist
       locals.freeze
     end
 
-    def step(name, opts = {}, &block)
-      steps << Step.new(
-        name,
-        opts.merge(ui: ui, number: steps.length + 1),
-        &block)
+    def step(name, *args, &block)
+      opts = args.last.is_a?(Hash) ? args.pop : {}
+      opts[:ui] = ui
+      opts[:number] = steps.length + 1
+      if block_given?
+        opts[:args] = args unless args.empty?
+        steps << Step.new(name, opts, &block)
+      else
+        steps << Step.render_template(name, opts, *args)
+      end
     end
 
     def run!
