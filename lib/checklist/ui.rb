@@ -3,7 +3,8 @@ require 'locale'
 
 begin
   # silence warnings
-  orig_verbose, $VERBOSE = $VERBOSE, nil
+  orig_verbose = $VERBOSE
+  $VERBOSE = nil
   require 'rainbow'
 ensure
   $VERBOSE = orig_verbose

@@ -19,7 +19,8 @@ require 'minitest/pride' if $stdout.tty?
 
 begin
   # silence warnings
-  orig_verbose, $VERBOSE = $VERBOSE, nil
+  orig_verbose = $VERBOSE
+  $VERBOSE = nil
   require 'wrong'
 ensure
   $VERBOSE = orig_verbose
