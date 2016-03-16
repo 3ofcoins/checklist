@@ -28,8 +28,14 @@ module Checklist
       output.puts(phrase.compact.join(' ') << "\n")
     end
 
-    def utf8?
-      Locale.charset == 'UTF-8'
+    UnicodeDWIM = Struct.new(:unicode, :ascii) do
+      def to_s
+        if Locale.charset == 'UTF-8'
+          unicode.to_s
+        else
+          ascii.to_s
+        end
+      end
     end
   end
 end

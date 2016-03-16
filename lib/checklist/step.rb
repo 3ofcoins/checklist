@@ -99,19 +99,15 @@ module Checklist
       error: :red }.freeze
 
     STATUS_MARKS = {
-      nil => '…',
-      started: '…',
-      done: '✓',
-      pass: '✓',
-      fail: '✗',
-      error: '💣' }.freeze
+      nil => ' ',
+      started: UI::UnicodeDWIM['…', '...'],
+      done: UI::UnicodeDWIM['✓', 'OK'],
+      pass: UI::UnicodeDWIM['✓', 'OK'],
+      fail: UI::UnicodeDWIM['✗', 'FAIL'],
+      error: UI::UnicodeDWIM['🔥', 'ERROR'] }.freeze
 
     def status_s
-      if ui.utf8?
-        STATUS_MARKS.fetch(status) { status.to_s.upcase }
-      else
-        status.to_s.upcase
-      end
+      STATUS_MARKS.fetch(status) { status }.to_s.upcase
     end
 
     def status_for_report
@@ -128,7 +124,9 @@ module Checklist
     end
 
     def report_action(message)
-      ui.say(Rainbow('▶').white.bright, message, '…')
+      ui.say Rainbow(UI::UnicodeDWIM['➤', '>>']).white.bright,
+             message,
+             UI::UnicodeDWIM['…', '...']
     end
 
     def ensure_not_configured

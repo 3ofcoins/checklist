@@ -7,7 +7,7 @@ module Checklist
       Checklist.new(*args, &block)
     end
 
-    def self.Step(name, &block)
+    def Step(name, &block) # rubocop:disable Style/MethodName
       Step.define_template(name, &block)
     end
   end

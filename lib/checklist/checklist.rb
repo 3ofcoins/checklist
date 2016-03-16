@@ -42,12 +42,17 @@ module Checklist
         ui.say
         st.run!(ctx)
       end
-    rescue => e
-      ui.say Rainbow("\nFATAL:").bright.red,
-             Rainbow(e.to_s).underline
+    rescue => err
+      ui.say Rainbow("\nFAILED:").bright.red,
+             Rainbow(name).underline
+      ui.say Rainbow('EXCEPTION:').red,
+             err
       ui.say Rainbow('REMAINING STEPS:').yellow
       steps.reject(&:done?).each(&:report)
       raise
+    else
+      ui.say Rainbow("\nFINISHED:").bright.green,
+             Rainbow(name).underline
     end
 
     def report_header
