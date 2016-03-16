@@ -43,8 +43,8 @@ class Minitest::Spec # rubocop:disable Style/ClassAndModuleChildren
     Minitest::Assertion
   end
 
-  let(:output) { StringIO.new }
-  let(:ui) { Checklist::UI.new(out: output) }
+  let(:ui_output) { StringIO.new }
+  let(:ui) { Checklist::UI.new(out: ui_output) }
 
   before do
     @step_cache = Checklist::Step.instance_variable_get(:@cache).dup
