@@ -8,7 +8,10 @@ if ENV['COVERAGE']
   require 'simplecov'
   SimpleCov.start do
     add_filter '/spec/' unless ENV['SPEC_COVERAGE']
-    add_filter('lib/checklist/ui.rb') # not covered by tests
+    add_filter '/.bundle/'
+    # not covered by tests
+    add_filter '/lib/checklist/ui.rb'
+    add_filter '/lib/checklist/step_library.rb'
   end
   SimpleCov.command_name 'spec'
 end
@@ -38,6 +41,17 @@ class Minitest::Spec # rubocop:disable Style/ClassAndModuleChildren
 
   def failure_class
     Minitest::Assertion
+  end
+
+  let(:output) { StringIO.new }
+  let(:ui) { Checklist::UI.new(out: output) }
+
+  before do
+    @step_cache = Checklist::Step.instance_variable_get(:@cache).dup
+  end
+
+  after do
+    Checklist::Step.instance_variable_set(:@cache, @step_cache)
   end
 end
 

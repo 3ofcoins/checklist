@@ -73,5 +73,13 @@ module Checklist
       report_header
       steps.each(&:report)
     end
+
+    def done?
+      steps.all?(&:done?)
+    end
+
+    def length
+      steps.length
+    end
   end
 end

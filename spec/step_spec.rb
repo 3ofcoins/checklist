@@ -8,9 +8,6 @@ module Checklist # rubocop:disable Metrics/ModuleLength
   end
 
   describe Step do
-    let(:output) { StringIO.new }
-    let(:ui) { UI.new(out: output) }
-
     describe '#initialize' do
       it 'takes a name and a block' do
         step = Step.new('A Name', ui: ui) { converge {} }
@@ -261,8 +258,6 @@ module Checklist # rubocop:disable Metrics/ModuleLength
     end
 
     describe '.define_template & .render_template' do
-      after { Step.remove_instance_variable :@cache }
-
       it 'defines a parameterized step template that can be rendered later' do
         val = nil
         Step.define_template 'foo' do |param|

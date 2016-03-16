@@ -171,7 +171,9 @@ module Checklist
       when Proc
         ctx.instance_exec(@value, &@expect)
       else
+        # :nocov:
         raise "CAN'T HAPPEN"
+        # :nocov:
       end
     end
 
