@@ -259,5 +259,28 @@ module Checklist # rubocop:disable Metrics/ModuleLength
         expect { ctx == { checked: 11, converged: 10 } }
       end
     end
+
+    describe '.define_template & .render_template' do
+      after { Step.remove_instance_variable :@cache }
+
+      it 'defines a parameterized step template that can be rendered later' do
+        val = nil
+        Step.define_template 'foo' do |param|
+          converge do
+            val = "#{param}!"
+          end
+        end
+
+        st1 = Step.render_template 'foo', { ui: ui }, 'fred'
+        expect { st1.name == 'foo' }
+        st1.run!
+        expect { val == 'fred!' }
+
+        st2 = Step.render_template 'foo', { ui: ui }, 'barney'
+        expect { st2.name == 'foo' }
+        st2.run!
+        expect { val == 'barney!' }
+      end
+    end
   end
 end
