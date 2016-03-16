@@ -1,6 +1,13 @@
 require 'highline'
 require 'locale'
-require 'rainbow'
+
+begin
+  # silence warnings
+  orig_verbose, $VERBOSE = $VERBOSE, nil
+  require 'rainbow'
+ensure
+  $VERBOSE = orig_verbose
+end
 
 module Checklist
   class UI

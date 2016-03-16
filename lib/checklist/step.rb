@@ -8,14 +8,22 @@ module Checklist
       @name = name
       @ui = opts.fetch(:ui) { UI.new(opts) }
       @opts = opts
+      @check = nil
+      @expect = nil
+      @converge = nil
+      @configured = false
+
       instance_exec(self, &block) if block_given?
-      @configured = true
       raise 'No converge provided' unless @converge
+      @configured = true
+
       reset!
     end
 
     def reset!
       @status = nil
+      @value = nil
+      @after_converge = nil
     end
 
     def check(question = nil, &block)

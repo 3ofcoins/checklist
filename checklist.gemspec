@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 require File.expand_path('../lib/checklist/version', __FILE__)
+require 'English'
 
 Gem::Specification.new do |gem|
   gem.authors       = ['Maciej Pasternacki']

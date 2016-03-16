@@ -1,5 +1,6 @@
 # -*- mode: ruby; coding: utf-8 -*-
 
+require 'English'
 require 'rubygems'
 require 'bundler/setup'
 
@@ -15,7 +16,14 @@ end
 require 'minitest/autorun'
 require 'minitest/spec'
 require 'minitest/pride' if $stdout.tty?
-require 'wrong'
+
+begin
+  # silence warnings
+  orig_verbose, $VERBOSE = $VERBOSE, nil
+  require 'wrong'
+ensure
+  $VERBOSE = orig_verbose
+end
 
 Wrong.config.alias_assert :expect, override: true
 
