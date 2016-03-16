@@ -1,9 +1,0 @@
-module Checklist
-  # Yields a new checklist to block and runs it
-  def self.checklist(*args)
-    raise ArgumentError, 'need a block' unless block_given?
-    cl = Checklist.new(*args)
-    yield cl
-    cl.run!
-  end
-end
