@@ -16,7 +16,7 @@ end
 def make_selftest_checklist
   require 'checklist'
 
-  Checklist.checklist 'Self Test' do
+  Checklist.new 'Self Test' do
     step 'rake', :rubocop
     step 'rake', :spec
   end

@@ -52,6 +52,9 @@ class Minitest::Spec # rubocop:disable Style/ClassAndModuleChildren
 
   after do
     Checklist::Step.instance_variable_set(:@cache, @step_cache)
+    if Checklist::Checklist.instance_variable_defined?(:@cache)
+      Checklist::Checklist.remove_instance_variable(:@cache)
+    end
   end
 end
 

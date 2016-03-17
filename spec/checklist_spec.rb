@@ -5,7 +5,7 @@ module Checklist
     it 'provides an environment for a list of steps' do
       sentinel = 23
       trace = []
-      cl = ::Checklist.checklist 'test', ui: ui do
+      cl = Checklist.new 'test', ui: ui do
         let(:var1) { sentinel }
         let(:var2) { var1 * 2 }
         step 'first' do
@@ -48,7 +48,7 @@ module Checklist
         end
       end
 
-      ::Checklist.checklist 'test', ui: ui do
+      Checklist.new 'test', ui: ui do
         step 'test', 4
         step 'test', 8
         step 'test', 15
@@ -62,7 +62,7 @@ module Checklist
 
     it 'raises exception on failed steps and reports unfinished steps' do
       trace = []
-      cl = ::Checklist.checklist 'test', ui: ui do
+      cl = Checklist.new 'test', ui: ui do
         step('foo')   { converge { trace << :foo } }
         step('bar')   { converge { trace << :bar } }
         step 'baz' do
@@ -91,6 +91,21 @@ module Checklist
       expect { after.include? 'baz' }
       expect { after.include? 'quux' }
       expect { after.include? 'xyzzy' }
+    end
+
+    describe '.define_template & .render_template' do
+      it 'defines a parameterized checklist template' do
+        trace = []
+        ::Checklist::Checklist.define_template 'test' do |param|
+          step('one') { converge { trace << "#{param}/1" } }
+          step('two') { converge { trace << "#{param}/2" } }
+        end
+
+        Checklist.render_template('test', { ui: ui }, 'fred').run!
+        Checklist.render_template('test', { ui: ui }, 'barney').run!
+
+        expect { trace == %w(fred/1 fred/2 barney/1 barney/2) }
+      end
     end
   end
 end

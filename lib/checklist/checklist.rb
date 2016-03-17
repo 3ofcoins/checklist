@@ -5,11 +5,20 @@ require_relative './step'
 require_relative './ui'
 
 module Checklist
-  def self.checklist(*args, &block)
-    Checklist.new(*args, &block)
-  end
-
   class Checklist
+    class << self
+      def define_template(name, &block)
+        raise ArgumentError unless block_given?
+        (@cache ||= {})[name] = block
+      end
+
+      def render_template(name, opts = {}, *args)
+        block = (@cache ||= {})[name]
+        raise ArgumentError, "Undefined template #{name.inspect}" unless block
+        new(name, opts) { instance_exec(*args, &block) }
+      end
+    end
+
     class Context
       def initialize(locals = nil)
         locals.infest(self) if locals
