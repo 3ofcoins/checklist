@@ -2,29 +2,18 @@ require 'forwardable'
 
 require_relative './locals'
 require_relative './step'
+require_relative './template_cache_mixin'
 require_relative './ui'
 
 module Checklist
   class Checklist
-    class << self
-      def define_template(name, &block)
-        raise ArgumentError unless block_given?
-        (@cache ||= {})[name] = block
-      end
-
-      def render_template(name, opts = {}, *args)
-        block = (@cache ||= {})[name]
-        raise ArgumentError, "Undefined template #{name.inspect}" unless block
-        new(name, opts) { instance_exec(*args, &block) }
-      end
-    end
-
     class Context
       def initialize(locals = nil)
         locals.infest(self) if locals
       end
     end
 
+    extend TemplateCacheMixin
     extend Forwardable
 
     attr_reader :name, :locals, :steps, :ui

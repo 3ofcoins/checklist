@@ -1,19 +1,9 @@
+require_relative './template_cache_mixin'
 require_relative './ui'
 
 module Checklist
   class Step
-    class << self
-      def define_template(name, &block)
-        raise ArgumentError unless block_given?
-        (@cache ||= {})[name] = block
-      end
-
-      def render_template(name, opts = {}, *args)
-        block = (@cache ||= {})[name]
-        raise ArgumentError, "Undefined template #{name.inspect}" unless block
-        new(name, opts) { instance_exec(*args, &block) }
-      end
-    end
+    extend TemplateCacheMixin
 
     attr_reader :name, :ui, :opts, :status
 

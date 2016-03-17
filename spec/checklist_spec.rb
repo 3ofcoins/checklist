@@ -92,20 +92,5 @@ module Checklist
       expect { after.include? 'quux' }
       expect { after.include? 'xyzzy' }
     end
-
-    describe '.define_template & .render_template' do
-      it 'defines a parameterized checklist template' do
-        trace = []
-        ::Checklist::Checklist.define_template 'test' do |param|
-          step('one') { converge { trace << "#{param}/1" } }
-          step('two') { converge { trace << "#{param}/2" } }
-        end
-
-        Checklist.render_template('test', { ui: ui }, 'fred').run!
-        Checklist.render_template('test', { ui: ui }, 'barney').run!
-
-        expect { trace == %w(fred/1 fred/2 barney/1 barney/2) }
-      end
-    end
   end
 end
