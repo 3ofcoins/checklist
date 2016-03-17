@@ -2,7 +2,10 @@ module Checklist
   module TemplateCacheMixin
     def define_template(name, &block)
       raise ArgumentError unless block_given?
-      raise ArgumentError, "#{name} already defined" if template_cache.include? name
+      if template_cache.include? name
+        raise ArgumentError,
+              "#{self.name} template #{name.inspect} already defined"
+      end
       template_cache[name] = block
     end
 

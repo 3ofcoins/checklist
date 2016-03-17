@@ -16,7 +16,7 @@ module Checklist
   describe TemplateCacheMixin do
     before do
       if TemplateCacheMixinTest.instance_variable_defined?(:@template_cache)
-        TemplateCacheMixinTest.remove_instance_variable(:@template_cache)
+        TemplateCacheMixinTest.remove_instance_variable :@template_cache
       end
     end
 

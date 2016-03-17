@@ -47,13 +47,15 @@ class Minitest::Spec # rubocop:disable Style/ClassAndModuleChildren
   let(:ui) { Checklist::UI.new(out: ui_output) }
 
   before do
-    @step_template_cache = Checklist::Step.instance_variable_get(:@template_cache).dup
+    @step_template_cache =
+      Checklist::Step.instance_variable_get(:@template_cache).dup
   end
 
   after do
-    Checklist::Step.instance_variable_set(:@template_cache, @step_template_cache)
+    Checklist::Step.instance_variable_set :@template_cache,
+                                          @step_template_cache
     if Checklist::Checklist.instance_variable_defined?(:@template_cache)
-      Checklist::Checklist.remove_instance_variable(:@template_cache)
+      Checklist::Checklist.remove_instance_variable :@template_cache
     end
   end
 end
