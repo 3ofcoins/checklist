@@ -24,6 +24,7 @@ module Checklist
       @ui = opts.fetch(:ui) { UI.new(opts) }
       @locals = Locals.new
       @steps = []
+      @opts = opts
       raise ArgumentError, 'Block is required' unless block_given?
       instance_exec(self, &block)
       steps.freeze
@@ -31,18 +32,14 @@ module Checklist
     end
 
     def step(name, *args, &block)
-      opts = args.last.is_a?(Hash) ? args.pop : {}
-      opts[:ui] = ui
-      opts[:number] = steps.length + 1
-      if block_given?
-        opts[:args] = args unless args.empty?
-        steps << Step.new(name, opts, &block)
-      else
-        steps << Step.render_template(name, opts, *args)
-      end
+      add_step(Step, name, *args, &block)
     end
 
-    def run!
+    def checklist(name, *args, &block)
+      add_step(Checklist, name, *args, &block)
+    end
+
+    def run!(_=nil)
       ctx = Context.new(locals)
       report_header
       steps.each do |st|
@@ -63,13 +60,14 @@ module Checklist
     end
 
     def report_header
-      ui.say Rainbow('CHECKLIST:').bright.yellow,
+      ui.say @opts[:number] && Rainbow("##{@opts[:number]}.").white.bright,
+             Rainbow('CHECKLIST:').bright.yellow,
              Rainbow(name).underline
     end
 
     def report
       report_header
-      steps.each(&:report)
+      steps.each(&:report) unless @opts[:compact]
     end
 
     def done?
@@ -78,6 +76,20 @@ module Checklist
 
     def length
       steps.length
+    end
+
+    private
+
+    def add_step(klass, name, *args, &block)
+      opts = args.last.is_a?(Hash) ? args.pop : {}
+      opts[:ui] = ui
+      opts[:number] = [@opts[:number], (steps.length + 1).to_s].compact.join('.')
+      if block_given?
+        opts[:args] = args unless args.empty?
+        steps << klass.new(name, opts, &block)
+      else
+        steps << klass.render_template(name, opts, *args)
+      end
     end
   end
 end

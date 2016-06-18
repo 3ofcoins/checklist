@@ -92,5 +92,100 @@ module Checklist
       expect { after.include? 'quux' }
       expect { after.include? 'xyzzy' }
     end
+    it 'can be nested' do
+      trace = []
+      cl = Checklist.new 'outer', ui: ui do
+        step 'foo' do
+          converge do
+            trace << :foo
+          end
+        end
+
+        checklist 'inner' do
+          step 'baz' do
+            converge do
+              trace << :baz
+            end
+          end
+
+          step 'quux' do
+            converge do
+              trace << :quux
+            end
+          end
+        end
+
+        step 'bar' do
+          converge do
+            trace << :bar
+          end
+        end
+      end
+
+      ui_output.truncate(0)
+      cl.report
+      ui_output.rewind
+      report = ui_output.read
+      expect { report.include? '1. foo' }
+      expect { report.include? '2. CHECKLIST: inner' }
+      expect { report.include? '2.1. baz' }
+      expect { report.include? '2.2. quux' }
+      expect { report.include? '3. bar' }
+      expect { report.lines.length == 6 }
+      expect { cl.length == 3 }
+
+      cl.run!
+
+      expect { trace == [:foo, :baz, :quux, :bar] }
+      expect { cl.done? }
+    end
+
+    it 'can be nested with compact report' do
+      trace = []
+      cl = Checklist.new 'outer', ui: ui do
+        step 'foo' do
+          converge do
+            trace << :foo
+          end
+        end
+
+        checklist 'inner', compact: true do
+          step 'baz' do
+            converge do
+              trace << :baz
+            end
+          end
+
+          step 'quux' do
+            converge do
+              trace << :quux
+            end
+          end
+        end
+
+        step 'bar' do
+          converge do
+            trace << :bar
+          end
+        end
+      end
+
+      ui_output.truncate(0)
+      cl.report
+      ui_output.rewind
+      report = ui_output.read
+      expect { report.include? '1. foo' }
+      expect { report.include? '2. CHECKLIST: inner' }
+      expect { !report.include? '2.1. baz' }
+      expect { !report.include? '2.2. quux' }
+      expect { report.include? '3. bar' }
+      expect { report.lines.length == 4 }
+      expect { cl.length == 3 }
+
+      cl.run!
+
+      expect { trace == [:foo, :baz, :quux, :bar] }
+      expect { cl.done? }
+    end
   end
 end

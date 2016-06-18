@@ -61,3 +61,5 @@ class Minitest::Spec # rubocop:disable Style/ClassAndModuleChildren
 end
 
 require 'checklist'
+
+Rainbow.enabled = false
